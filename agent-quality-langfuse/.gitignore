@@ -1,0 +1,6 @@
+.venv/
+runs/
+# derived from BIRD (vendor/) or containing hidden-oracle gold SQL: never commit
+data/*.sqlite
+data/gold_original.json
+data/fault.json

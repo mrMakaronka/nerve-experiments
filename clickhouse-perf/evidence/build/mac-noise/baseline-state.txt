@@ -1,0 +1,12 @@
+ddl_sha256=6248177a818560e0
+sorting_key=CounterID, EventDate, UserID, EventTime, WatchID
+rows=99997497
+parts=3
+bytes=15256554124
+parts_content_hash=13479377661238921247
+projections=[]
+skip_indexes=[]
+bench_tables=['hits']
+settings_profiles=['dashboard_profile','default','readonly']
+dashboard_profile=`dashboard_profile` SETTINGS max_execution_time = 600.
+dashboard_user=CREATE USER dashboard  DEFAULT DATABASE bench SETTINGS PROFILE `dashboard_profile`

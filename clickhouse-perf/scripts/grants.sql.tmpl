@@ -1,0 +1,33 @@
+-- demo-v4 identities. Grants are the isolation mechanism on the ClickHouse side.
+CREATE DATABASE IF NOT EXISTS bench;
+CREATE DATABASE IF NOT EXISTS _snap;
+
+-- dashboard: the workload identity. Its settings profile is where a persistent settings fix must live (C7).
+CREATE SETTINGS PROFILE OR REPLACE dashboard_profile SETTINGS max_execution_time = 600;
+CREATE USER OR REPLACE dashboard IDENTIFIED WITH sha256_password BY '{{DASHBOARD}}' DEFAULT DATABASE bench SETTINGS PROFILE 'dashboard_profile';
+GRANT SELECT ON bench.* TO dashboard;
+
+-- nerve_rw: the implementer. DDL + settings on bench, read on system, nothing on _snap.
+CREATE USER OR REPLACE nerve_rw IDENTIFIED WITH sha256_password BY '{{NERVE_RW}}' DEFAULT DATABASE bench;
+GRANT SELECT, INSERT, ALTER, CREATE TABLE, CREATE VIEW, DROP TABLE, DROP VIEW, OPTIMIZE, SHOW TABLES, TRUNCATE ON bench.* TO nerve_rw;
+GRANT SELECT ON system.* TO nerve_rw;
+GRANT SYSTEM FLUSH LOGS ON *.* TO nerve_rw;
+GRANT CREATE SETTINGS PROFILE, ALTER SETTINGS PROFILE, DROP SETTINGS PROFILE ON *.* TO nerve_rw;
+GRANT ALTER USER ON *.* TO nerve_rw;   -- needed to attach a new profile to dashboard; C7 checks the result
+
+-- nerve_verify: the verifier. Read-only on bench and system, flush logs. No rights over dashboard's profile.
+-- (no readonly profile: readonly=2 would also block SYSTEM FLUSH LOGS; read-only comes from the grants)
+CREATE USER OR REPLACE nerve_verify IDENTIFIED WITH sha256_password BY '{{NERVE_VERIFY}}' DEFAULT DATABASE bench;
+GRANT SELECT ON bench.* TO nerve_verify;
+GRANT SELECT ON system.* TO nerve_verify;
+GRANT SYSTEM FLUSH LOGS ON *.* TO nerve_verify;
+
+-- Hidden control set: our own control replays use log_comment 'ctl-*'. Hide those rows (query text) from the agents.
+-- Also hide the Run B v1 window (Run B v1, v2, Run C and the env check, 14:19 UTC to 2026-11-11 18:34:20 UTC; also Run B clean and envcheck-2) so later runs cannot read the v1 implementer's
+-- DDL / experiments / the v1 verifier's replays (server time zone is UTC).
+CREATE ROW POLICY OR REPLACE hide_control ON system.query_log USING log_comment NOT LIKE 'ctl-%' AND NOT (event_time >= '2026-11-11 14:19:00' AND event_time < '2026-11-11 18:54:54') TO nerve_rw, nerve_verify;
+CREATE ROW POLICY OR REPLACE admin_all ON system.query_log USING 1 TO v4admin, dashboard;
+
+-- Run B v1 window in the other logs that name tables or carry query text (part_log, text_log).
+CREATE ROW POLICY OR REPLACE hide_v1 ON system.part_log, system.text_log, system.processors_profile_log USING NOT (event_time >= '2026-11-11 14:19:00' AND event_time < '2026-11-11 18:54:54') TO nerve_rw, nerve_verify;
+CREATE ROW POLICY OR REPLACE admin_all_v1 ON system.part_log, system.text_log, system.processors_profile_log USING 1 TO v4admin, dashboard;

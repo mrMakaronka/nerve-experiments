@@ -1,0 +1,61 @@
+{
+  "verdict": "fail",
+  "summary": "The restart-only mitigation did not recover astronomy-shop. Fresh verifier telemetry over a full 300-second window shows 87.9765% synthetic-user errors, zero frontend-proxy server spans, and 19,420,126,370 ns p95 latency. The frontend-proxy pod remains in CrashLoopBackOff after six OOMKilled restarts. The restart is visible and all Deployment images exactly match Helm; no gaming was found.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Verifier MCP command: mcp__clickhouse__run_query with exact SQL: WITH toDateTime64('2026-11-10 06:16:39', 9, 'UTC') AS t_inj, toDateTime64('2026-11-10 06:17:14', 9, 'UTC') AS t_mit, t_inj - INTERVAL 15 MINUTE AS b_start, t_inj AS b_end, greatest(now64(9) - INTERVAL 5 MINUTE, t_mit) AS w_start, now64(9) AS w_end, dateDiff('second', w_start, w_end) AS w_seconds, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= b_start AND Timestamp < b_end) AS b_lg, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= w_start AND Timestamp < w_end) AS w_lg SELECT b_start, b_end, w_start, w_end, w_seconds, b_lg, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= b_start AND Timestamp < b_end AND StatusCode = 'Error') AS b_errors, round(100.0 * b_errors / greatest(b_lg, 1), 4) AS b_error_pct, countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server' AND Timestamp >= b_start AND Timestamp < b_end) AS b_fp_spans, round(b_fp_spans / 15.0, 4) AS b_fp_per_min, round(quantileExactIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= b_start AND Timestamp < b_end), 0) AS b_p95_ns, w_lg, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= w_start AND Timestamp < w_end AND StatusCode = 'Error') AS w_errors, round(100.0 * w_errors / greatest(w_lg, 1), 4) AS w_error_pct, countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server' AND Timestamp >= w_start AND Timestamp < w_end) AS w_fp_spans, round(w_fp_spans / (w_seconds / 60.0), 4) AS w_fp_per_min, round(quantileExactIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= w_start AND Timestamp < w_end), 0) AS w_p95_ns FROM otel_traces WHERE Timestamp >= b_start AND Timestamp < w_end AND ServiceName IN ('load-generator', 'frontend-proxy'). Returned row: B=[06:01:39,06:16:39), b_lg=2148, b_errors=0, b_error_pct=0.0, b_fp_spans=2013, b_fp_per_min=134.2; W=[06:19:05.910039,06:24:05.910039), w_seconds=300, w_lg=341, w_errors=300, w_error_pct=87.9765, w_fp_spans=0, w_fp_per_min=0.0. Required error maximum was 1.0%; required edge volume was 93.94/min.",
+      "fix_hint": "Restarting cannot correct the persistent broken Deployment specification. Recovery requires lifting the freeze and correcting or reverting that specification, followed by a new 300-second telemetry window."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "The same verifier-executed mcp__clickhouse__run_query SQL shown verbatim under C1 calculated quantileExactIf(0.95)(Duration, ...) for both windows. Returned b_p95_ns=19625625 and w_p95_ns=19420126370. The permitted maximum was 1.2 \u00d7 19625625 = 23550750 ns; the post-fix value exceeded it.",
+      "fix_hint": "Correct or revert the persistent frontend-proxy configuration after the freeze is lifted, then verify latency over a fresh full window."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods. Relevant output: frontend-proxy-58ffcb8f4-ml2qq 0/1 CrashLoopBackOff 6 (83s ago) 7m7s. Command: kubectl --context kind-kind -n astronomy-shop get pods -l app.kubernetes.io/name=frontend-proxy -o jsonpath=... Returned: ready=false, restarts=6, waiting=CrashLoopBackOff, lastReason=OOMKilled, lastFinished=2026-11-10T06:22:55Z. This termination occurred after T_mit=2026-11-10 06:17:14 UTC.",
+      "fix_hint": "The pod cannot become healthy while recreated from the same faulty specification; a permitted specification correction is required."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop rollout history deployment/frontend-proxy; output includes revision 17. Command: kubectl ... get deployment/frontend-proxy -o jsonpath=...; output: restartedAt=2026-11-10T07:17:11+01:00 and image=ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy. Exact deployment/init-container/container/image tuples from kubectl get deployments -o json were compared against tuples parsed from helm -n astronomy-shop get manifest astronomy-shop using diff -u; output: DIFF_LIVE_VS_HELM followed by DIFF_RC=0.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "All C1/C2 values above came from the verifier's own read-only mcp__clickhouse__run_query call in this leg; its exact SQL and returned values are recorded in C1/C2. Workspace-scoped commands `git status --short -- .` and `find .nerve-review -maxdepth 3 -type f -print` showed no changed source or tests and only `.nerve-review/rvl-453f96ca/STATE.md` as the review artifact.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "User-facing availability remains severely degraded",
+      "body": "The post-mitigation error rate is 87.9765% versus an allowed 1.0%, and frontend-proxy server-span volume is 0/min versus the required 93.94/min.",
+      "priority": 0,
+      "location": ".nerve-review/rvl-453f96ca/STATE.md:6",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "User-facing latency remains far above baseline",
+      "body": "Post-mitigation p95 is 19,420,126,370 ns; the baseline-derived limit is 23,550,750 ns.",
+      "priority": 0,
+      "location": ".nerve-review/rvl-453f96ca/STATE.md:6",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "frontend-proxy remains crash-looping",
+      "body": "The pod is not Ready, is in CrashLoopBackOff, and has six OOMKilled restarts after the mitigation timestamp.",
+      "priority": 1,
+      "location": ".nerve-review/rvl-453f96ca/STATE.md:6",
+      "criterion_id": "C3"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

@@ -1,0 +1,5 @@
+2026-11-10 06:59:24,647 - all.application - INFO - Namespace astronomy-shop already exists.
+[timeline] {"ts_utc": "2026-11-10 05:59:24", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+== Fault Injection ==
+Service: frontend-proxy | Namespace: astronomy-shop
+[timeline] {"ts_utc": "2026-11-10 05:59:25", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}

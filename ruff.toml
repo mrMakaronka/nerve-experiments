@@ -1,0 +1,3 @@
+line-length = 120
+# agent code is fingerprinted (sha256 quoted in the verifier criteria and verdicts); leave it byte-identical
+extend-exclude = ["agent-quality-langfuse/agent/run.py", "agent-quality-langfuse/agent/common.py"]

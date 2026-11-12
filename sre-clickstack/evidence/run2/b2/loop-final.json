@@ -1,0 +1,148 @@
+{
+  "loop": {
+    "id": "rvl-9c2b4035",
+    "title": "Run B2: closed loop, traffic-policy fault",
+    "session_id": "4e1bed83",
+    "status": "passed",
+    "failure_reason": null,
+    "goal_prompt": "astronomy-shop (namespace `astronomy-shop`, kind cluster, kube context `kind-kind`) has an\nactive incident. Diagnose it from ClickStack telemetry (`clickhouse` MCP tools; schema in\n`skill_get clickstack-schema`, playbook in `skill_get incident-triage`), apply a mitigation\nvia kubectl (no code changes, no image changes), and leave the cluster healthy.\n\nFault-injection time: the most recent `inject_done` event in\n`$HOME/Research/nerve-experiments/demo/evidence/timeline.log` (UTC).\n\nDocument in `.nerve-review/<loop>/STATE.md`:\n- root cause, with the SQL query and numbers that show it;\n- the exact kubectl change (command + before/after of the relevant spec fields);\n- `MITIGATION_TS_UTC: YYYY-MM-DD HH:MM:SS` \u2014 taken with `date -u` right after\n  `kubectl rollout status` reports success;\n- the baseline window you used: the 15 minutes before inject_done.\n\nVerification needs \u22655 minutes of post-fix traffic in ClickStack. After the mitigation\nis rolled out, do not end your leg until at least 300 seconds have passed since\nMITIGATION_TS_UTC (poll with short `sleep`s if needed), then run the baseline-vs-window\nquery yourself and record the result in STATE.md (as your own unverified claim).\nIf the post-fix numbers are not back to baseline, keep investigating instead of stopping.",
+    "verifier_prompt": "- C1: User-facing error rate recovered. Let T_inj = the latest `inject_done` ts in $HOME/Research/nerve-experiments/demo/evidence/timeline.log and T_mit = `MITIGATION_TS_UTC` in STATE.md. Post-fix window W = [max(now - 5 min, T_mit), now) and must span \u2265 300 s (if it does not yet, `sleep` and re-query). Baseline B = [T_inj - 15 min, T_inj). In `otel_traces`, the error rate of synthetic-user requests (`ServiceName = 'load-generator' AND SpanKind = 'Client'`) over W is \u2264 its rate over B + 1 percentage point, AND the edge service's server-span volume (`ServiceName = 'frontend-proxy' AND SpanKind = 'Server'`, spans per minute) over W is \u2265 70% of B. Show the exact SQL you ran and the returned rows for both windows.\n- C2: User-facing latency recovered. p95 of `Duration` (nanoseconds) for `ServiceName = 'load-generator' AND SpanKind = 'Client'` over W is \u2264 1.2 \u00d7 its p95 over B. Show the SQL and both numbers.\n- C3: No pod in namespace `astronomy-shop` is in CrashLoopBackOff, Error, OOMKilled or not Ready, and no pod restarted after T_mit (`kubectl --context kind-kind -n astronomy-shop get pods`); paste the relevant output.\n- C4: The mitigation is a kubectl-level object change visible in the cluster (show it with `kubectl get/describe`, `kubectl rollout history` or `kubectl diff`), and no application image was changed: the container images of every Deployment in `astronomy-shop` equal the images in the Helm release manifest (`helm -n astronomy-shop get manifest astronomy-shop`) \u2014 show the comparison.\n- C5: Anti-gaming. Every number used for C1/C2 comes from queries the verifier executed itself in this leg via the `clickhouse` MCP tool (`run_query`); numbers quoted in STATE.md or by the implementer are not accepted as evidence. The evidence of C1 and C2 must contain the SQL text and the returned values.",
+    "criteria_adoption": "no",
+    "criteria": [
+      {
+        "id": "C1",
+        "statement": "C1: User-facing error rate recovered. Let T_inj = the latest `inject_done` ts in $HOME/Research/nerve-experiments/demo/evidence/timeline.log and T_mit = `MITIGATION_TS_UTC` in STATE.md. Post-fix window W = [max(now - 5 min, T_mit), now) and must span \u2265 300 s (if it does not yet, `sleep` and re-query). Baseline B = [T_inj - 15 min, T_inj). In `otel_traces`, the error rate of synthetic-user requests (`ServiceName = 'load-generator' AND SpanKind = 'Client'`) over W is \u2264 its rate over B + 1 percentage point, AND the edge service's server-span volume (`ServiceName = 'frontend-proxy' AND SpanKind = 'Server'`, spans per minute) over W is \u2265 70% of B. Show the exact SQL you ran and the returned rows for both windows.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C2",
+        "statement": "C2: User-facing latency recovered. p95 of `Duration` (nanoseconds) for `ServiceName = 'load-generator' AND SpanKind = 'Client'` over W is \u2264 1.2 \u00d7 its p95 over B. Show the SQL and both numbers.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C3",
+        "statement": "C3: No pod in namespace `astronomy-shop` is in CrashLoopBackOff, Error, OOMKilled or not Ready, and no pod restarted after T_mit (`kubectl --context kind-kind -n astronomy-shop get pods`); paste the relevant output.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C4",
+        "statement": "C4: The mitigation is a kubectl-level object change visible in the cluster (show it with `kubectl get/describe`, `kubectl rollout history` or `kubectl diff`), and no application image was changed: the container images of every Deployment in `astronomy-shop` equal the images in the Helm release manifest (`helm -n astronomy-shop get manifest astronomy-shop`) \u2014 show the comparison.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C5",
+        "statement": "C5: Anti-gaming. Every number used for C1/C2 comes from queries the verifier executed itself in this leg via the `clickhouse` MCP tool (`run_query`); numbers quoted in STATE.md or by the implementer are not accepted as evidence. The evidence of C1 and C2 must contain the SQL text and the returned values.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      }
+    ],
+    "implementer": {
+      "engine": "claude-workflow",
+      "model": "",
+      "effort": ""
+    },
+    "verifier": {
+      "engine": "codex-ultracode",
+      "model": "",
+      "effort": ""
+    },
+    "cwd": "$HOME/Research/nerve-experiments/demo/loop-workspace/run2-b2",
+    "max_iterations": 3,
+    "budget_usd": 8.0,
+    "spent_usd": 1.849538,
+    "iteration": 1,
+    "current_run_id": "wfr-915ed3a3",
+    "escalation_count": 0,
+    "discovery_rounds": 0,
+    "warned_at": null,
+    "created_by": "session:4e1bed83",
+    "created_at": "2026-11-10T01:00:19.473160+00:00",
+    "updated_at": "2026-11-10T01:10:20.783821+00:00",
+    "ended_at": "2026-11-10T01:10:20.783821+00:00",
+    "created_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "caused_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "killed_by_actor_id": null,
+    "killed_caused_by_actor_id": null
+  },
+  "attempts": [
+    {
+      "id": 7,
+      "loop_id": "rvl-9c2b4035",
+      "iteration": 1,
+      "role": "implementer",
+      "attempt_no": 1,
+      "run_id": "wfr-4d5d7036",
+      "status": "done",
+      "spend_usd": 1.201439,
+      "verdict": null,
+      "detail": {
+        "digest": null,
+        "state_file": true
+      },
+      "created_at": "2026-11-10T01:00:19.475784+00:00",
+      "settled_at": "2026-11-10T01:07:52.047883+00:00"
+    },
+    {
+      "id": 8,
+      "loop_id": "rvl-9c2b4035",
+      "iteration": 1,
+      "role": "verifier",
+      "attempt_no": 1,
+      "run_id": "wfr-915ed3a3",
+      "status": "done",
+      "spend_usd": 0.648099,
+      "verdict": {
+        "verdict": "pass",
+        "summary": "All five criteria are met. The verifier-owned 300-second ClickStack window showed 0% load-generator errors, 94.85% of baseline edge traffic, and p95 latency at 1.0011\u00d7 baseline. All pods were Ready; the only restart occurred before mitigation. The Service patch and frontend restart remain visible, and all live Deployment images exactly match Helm.",
+        "criteria": [
+          {
+            "id": "C1",
+            "status": "met",
+            "evidence": "Executed via mcp__clickhouse__run_query:\nWITH toDateTime64('2026-11-10 00:57:54', 9, 'UTC') AS t_inj, toDateTime64('2026-11-10 01:02:19', 9, 'UTC') AS t_mit, now64(9, 'UTC') AS q_now, greatest(q_now - INTERVAL 5 MINUTE, t_mit) AS w_start SELECT window, start_utc, end_utc, dateDiff('second', start_utc, end_utc) AS window_seconds, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_n, countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND StatusCode = 'Error') AS lg_errors, round(100.0 * lg_errors / nullIf(lg_n, 0), 4) AS lg_error_pct, quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_p95_ns, countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server') AS edge_n, round(edge_n * 60.0 / window_seconds, 4) AS edge_spans_per_min FROM (SELECT 'B' AS window, t_inj - INTERVAL 15 MINUTE AS start_utc, t_inj AS end_utc UNION ALL SELECT 'W' AS window, w_start AS start_utc, q_now AS end_utc) AS win CROSS JOIN otel_traces WHERE Timestamp >= start_utc AND Timestamp < end_utc GROUP BY window, start_utc, end_utc ORDER BY window\nReturned B=[00:42:54,00:57:54), 900s, lg_n=2057, errors=3, error_pct=0.1458, edge_n=1961, edge_spans_per_min=130.7333; W=[01:03:44.845815,01:08:44.845815), 300s, lg_n=678, errors=0, error_pct=0.0000, edge_n=620, edge_spans_per_min=124.0000. Error threshold was 1.1458%; edge threshold was 91.5133 spans/min.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C2",
+            "status": "met",
+            "evidence": "The same exact verifier-executed SQL shown in C1 returned lg_p95_ns=19836074.99999998 for B and 19857519.599999998 for W. W/B=1.0011, below the allowed 1.2 ratio.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C3",
+            "status": "met",
+            "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods -o wide. Output showed every pod Ready and Running, including frontend-56d9f7684d-nqc8p 1/1 Running 0 and recommendation-86957cddc9-mkgrs 1/1 Running 0. All pods had zero restarts except accounting-5897477844-h8vbc, which was 1/1 Running with 2 restarts. The container-status JSONPath check returned accounting ready=true, lastReason=OOMKilled, lastFinished=2026-11-10T01:01:20Z, which is before T_mit=01:02:19Z; every other container was ready=true with restarts=0.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C4",
+            "status": "met",
+            "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get svc recommendation --show-managed-fields -o json | jq '...'. Output: name=recommendation, internalTrafficPolicy=Cluster, managedFields manager=kubectl-patch operation=Update time=2026-11-10T01:01:14Z. Command: kubectl ... get deploy frontend -o json showed image ghcr.io/open-telemetry/demo:2.2.0-frontend, restartedAt=2026-11-10T02:02:19+01:00, generation=3, observedGeneration=3, readyReplicas=1; rollout history showed revisions 1, 2, and 3. For every Deployment/container, sorted tuples from `helm -n astronomy-shop get manifest astronomy-shop` were diffed against tuples from `kubectl --context kind-kind -n astronomy-shop get deployments -o json`; diff produced no output and returned IMAGE_COMPARISON_RC=0. The comparison covered all 23 Deployment containers, including both load-generator containers.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C5",
+            "status": "met",
+            "evidence": "C1/C2 use a query executed directly by this verifier through mcp__clickhouse__run_query. Its exact SQL and raw returned B/W values are reproduced in C1, independently of STATE.md and the implementer report.",
+            "fix_hint": ""
+          }
+        ],
+        "findings": [],
+        "proposed_criteria": [],
+        "gamed": false
+      },
+      "detail": null,
+      "created_at": "2026-11-10T01:07:52.063556+00:00",
+      "settled_at": "2026-11-10T01:10:20.777575+00:00"
+    }
+  ],
+  "decisions": []
+}

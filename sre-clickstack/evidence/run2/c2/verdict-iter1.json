@@ -1,0 +1,54 @@
+{
+  "verdict": "fail",
+  "summary": "The restart-only mitigation did not restore user-facing correctness. In the verifier-owned 300-second window, synthetic traffic error rate was 7.563% versus a 0% baseline, exceeding the allowed 1 percentage point, although edge volume and p95 latency passed. All pods are currently Ready, but accounting restarted with OOMKilled after T_mit. The rollout restart is visible and all 29 live deployment container/init-container images exactly match Helm. No gaming was found.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Executed via mcp__clickhouse__run_query:\nWITH\n    toDateTime64('2026-11-10 01:29:21', 9, 'UTC') AS t_inj,\n    toDateTime64('2026-11-10 01:31:03', 9, 'UTC') AS t_mit,\n    now64(9, 'UTC') AS t_now\nSELECT\n    window,\n    window_start,\n    window_end,\n    dateDiff('second', window_start, window_end) AS window_seconds,\n    countIf(ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_requests,\n    countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND StatusCode = 'Error') AS lg_errors,\n    if(lg_requests = 0, NULL, round(100.0 * lg_errors / lg_requests, 4)) AS error_pct,\n    countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server') AS frontend_server_spans,\n    round(frontend_server_spans / (window_seconds / 60.0), 4) AS frontend_spans_per_min,\n    if(lg_requests = 0, NULL, quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client')) AS p95_ns\nFROM default.otel_traces\nCROSS JOIN\n(\n    SELECT tupleElement(w, 1) AS window, tupleElement(w, 2) AS window_start, tupleElement(w, 3) AS window_end\n    FROM\n    (\n        SELECT arrayJoin([\n            tuple('B', t_inj - INTERVAL 15 MINUTE, t_inj),\n            tuple('W', greatest(t_now - INTERVAL 5 MINUTE, t_mit), t_now)\n        ]) AS w\n    ) AS window_array\n) AS windows\nWHERE Timestamp >= window_start AND Timestamp < window_end\nGROUP BY window, window_start, window_end\nORDER BY window\nReturned rows:\nB | 2026-11-10 01:14:21 | 2026-11-10 01:29:21 | 900 s | lg_requests=2166 | lg_errors=0 | error_pct=0.0 | frontend_server_spans=2109 | frontend_spans_per_min=140.6 | p95_ns=19757093.5\nW | 2026-11-10 02:55:50.694923 | 2026-11-10 03:00:50.694923 | 300 s | lg_requests=714 | lg_errors=54 | error_pct=7.563 | frontend_server_spans=676 | frontend_spans_per_min=135.2 | p95_ns=20974097.8\nError threshold was 1.0%; observed 7.563%, so error recovery fails. Volume threshold was 98.42 spans/min; observed 135.2, so the volume subcondition passes.",
+      "fix_hint": "Restore the broken recommendation traffic path under an operator-approved lifting of the change freeze, then collect and re-query a new 300-second window."
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "The exact verifier-owned SQL shown for C1 computed p95 with quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client'). Returned B p95_ns=19757093.5 and W p95_ns=20974097.8. The permitted limit is 1.2 \u00d7 19757093.5 = 23708512.2 ns; 20974097.8 ns is below that limit. A verifier sanity query over error spans returned error_spans=53, min_ns=2473000, p50_ns=3809125.0, p95_ns=6558091.2, max_ns=8312250, confirming the current failures are fast errors.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods -o wide\nRelevant output: accounting-5897477844-h8vbc 1/1 Running 5 (56m ago); all listed pods were Running and Ready.\nCommand: kubectl --context kind-kind -n astronomy-shop get pods -o jsonpath='{range .items[*]}{.metadata.name}{\"\\t\"}{range .status.containerStatuses[*]}{.name}{\" ready=\"}{.ready}{\" restarts=\"}{.restartCount}{\" lastReason=\"}{.lastState.terminated.reason}{\" lastFinished=\"}{.lastState.terminated.finishedAt}{\"; \"}{end}{\"\\n\"}{end}'\nRelevant output: accounting-5897477844-h8vbc accounting ready=true restarts=5 lastReason=OOMKilled lastFinished=2026-11-10T02:04:31Z. This termination occurred after T_mit=2026-11-10T01:31:03Z.",
+      "fix_hint": "Investigate the accounting OOM and establish a clean post-mitigation period without container restarts; do not hide the event by deleting the pod."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get deployment frontend recommendation -o custom-columns='NAME:.metadata.name,GENERATION:.metadata.generation,RESTARTED_AT:.spec.template.metadata.annotations.kubectl\\.kubernetes\\.io/restartedAt,IMAGE:.spec.template.spec.containers[*].image'\nOutput: frontend generation=7 restartedAt=2026-11-10T02:31:02+01:00; recommendation generation=8 restartedAt=2026-11-10T02:31:02+01:00. Commands kubectl rollout history deployment/frontend and deployment/recommendation showed revisions 7 and 8 respectively.\nFor image parity, I extracted deployment/container/name/image tuples from `helm -n astronomy-shop get manifest astronomy-shop`, extracted the same tuples from `kubectl --context kind-kind -n astronomy-shop get deployments -o json`, sorted them, displayed them side-by-side, and ran `diff -u` on the lists. Output showed 29 paired identical entries, `HELM_COUNT=29 LIVE_COUNT=29`, no diff output, and exit code 0.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "All C1/C2 values in this verdict came from the verifier's own successful mcp__clickhouse__run_query call in this leg. The exact SQL and complete B/W returned rows are included under C1; C2 identifies the same query's p95 expression and returned values. Implementer-provided telemetry numbers were not used as evidence.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Synthetic-user error rate remains above the recovery threshold",
+      "body": "The fresh 300-second window contained 714 synthetic requests and 54 errors: 7.563% versus the 0% baseline and 1% maximum allowed. Traffic volume is sufficient, so this is an observed service failure rather than an empty-window artifact.",
+      "priority": 0,
+      "location": "ClickHouse:default.otel_traces",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "Accounting restarted after mitigation",
+      "body": "The accounting container is currently Ready but its last termination was OOMKilled at 2026-11-10T02:04:31Z, later than T_mit 2026-11-10T01:31:03Z. This directly violates the no-post-mitigation-restart requirement.",
+      "priority": 1,
+      "location": "cluster:pod/accounting-5897477844-h8vbc",
+      "criterion_id": "C3"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

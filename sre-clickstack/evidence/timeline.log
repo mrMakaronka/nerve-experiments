@@ -1,0 +1,47 @@
+{"ts_utc": "2026-11-09 22:13:22", "event": "deploy_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 22:20:48", "event": "deploy_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 22:23:42", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 22:23:43", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 22:27:28", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 23:00:59", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 23:01:00", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 23:44:23", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": true}}
+{"ts_utc": "2026-11-09 23:44:37", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 23:44:38", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-09 23:56:27", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "duplicate_env_definitions", "failure_class": "agent_error", "detail": {"env": "FRONTEND_HOST", "values": ["frontend", "localhost"]}}}
+{"ts_utc": "2026-11-09 23:56:41", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 00:35:25", "event": "deploy_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 00:39:42", "event": "deploy_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 00:56:29", "event": "inject_start", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 00:57:54", "event": "inject_done", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 01:11:19", "event": "oracle", "problem": "internal_traffic_policy_local_astronomy_shop", "result": {"success": true, "internalTrafficPolicy": "Cluster", "probe_node": "kind-worker2", "probe_ok": true}}
+{"ts_utc": "2026-11-10 01:11:39", "event": "recover_done", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 01:28:10", "event": "inject_start", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 01:29:21", "event": "inject_done", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 03:03:34", "event": "oracle", "problem": "internal_traffic_policy_local_astronomy_shop", "result": {"internalTrafficPolicy": "Local", "uncovered_nodes": ["kind-worker2", "kind-worker3"], "success": false, "reason": "fault_still_present", "failure_class": "agent_error", "detail": {"policy": "Local", "uncovered_nodes": ["kind-worker2", "kind-worker3"]}}}
+{"ts_utc": "2026-11-10 03:04:43", "event": "recover_done", "problem": "internal_traffic_policy_local_astronomy_shop"}
+{"ts_utc": "2026-11-10 03:21:18", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 03:21:25", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 03:39:33", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": true}}
+{"ts_utc": "2026-11-10 03:55:37", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 03:55:38", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 04:08:44", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "required_deployment_not_rolled_out", "failure_class": "ambiguous", "detail": {"deployment": "frontend-proxy", "waited_seconds": 120}}}
+{"ts_utc": "2026-11-10 04:08:46", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 04:25:00", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 04:25:02", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 04:49:12", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": true}}
+{"ts_utc": "2026-11-10 05:05:16", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:05:18", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:16:54", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "required_deployment_not_rolled_out", "failure_class": "ambiguous", "detail": {"deployment": "frontend-proxy", "waited_seconds": 120}}}
+{"ts_utc": "2026-11-10 05:16:56", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:33:10", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:33:10", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:43:20", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": true}}
+{"ts_utc": "2026-11-10 05:59:24", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 05:59:25", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 06:00:10", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "duplicate_env_definitions", "failure_class": "agent_error", "detail": {"env": "FRONTEND_HOST", "values": ["frontend", "localhost"]}}}
+{"ts_utc": "2026-11-10 06:00:12", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 06:16:39", "event": "inject_start", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 06:16:39", "event": "inject_done", "problem": "env_variable_shadowing_astronomy_shop"}
+{"ts_utc": "2026-11-10 06:28:00", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "duplicate_env_definitions", "failure_class": "agent_error", "detail": {"env": "FRONTEND_HOST", "values": ["frontend", "localhost"]}}}
+{"ts_utc": "2026-11-10 06:28:02", "event": "recover_done", "problem": "env_variable_shadowing_astronomy_shop"}

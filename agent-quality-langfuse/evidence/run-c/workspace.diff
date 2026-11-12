@@ -1,0 +1,15 @@
+diff --git a/workspace/prompt.md b/workspace/prompt.md
+index e4c8aa1..26e4e71 100644
+--- a/workspace/prompt.md
++++ b/workspace/prompt.md
+@@ -5,3 +5,10 @@ Given a question and optional evidence (business definitions from analysts), wri
+ - Use only tables and columns that exist in the schema.
+ - Return only the columns the question asks for, in the order asked.
+ - Put the final query in a single ```sql code block. No explanation is needed.
++
++## General SQL guidance
++- Before writing the query, identify which tables hold each piece of information the question needs and the join path between them; join only through key columns that exist in the schema.
++- Treat the evidence as a statement of intent (which entity, filter value or formula is meant), not as an authoritative list of identifiers: if the evidence names a column or table that is not in the schema, map it to the existing column with the same meaning instead of copying the name.
++- Every identifier in the query must appear in the schema exactly as written there; never invent or guess an identifier.
++- Use literal filter values with the exact spelling and capitalisation given in the question or evidence.
++- Do not add filters, DISTINCT, LIMIT or extra columns that the question does not ask for.

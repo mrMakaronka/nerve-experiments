@@ -1,0 +1,39 @@
+{
+  "verdict": "pass",
+  "summary": "All five criteria are met. Independent replay verifier-rvl-87f3dbe9-iter3 (experiment_id 3d3967fceadb00bc) achieved 0.9333 exec match and 1.0000 control, within cost and latency limits. Scope, fingerprint, cleanliness, and anti-gaming checks passed.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Ran run_experiment(run_name=\"verifier-rvl-87f3dbe9-iter3\", workspace_dir=\"$HOME/nerve-v3-loops/run-b/workspace\"), then get_run_scores(run_name=\"verifier-rvl-87f3dbe9-iter3\"). Readback: experiment_id=\"3d3967fceadb00bc\"; run_scores.exec_match_avg=0.933333; recomputed_from_item_scores.exec_match_avg=0.9333 (60 scored). They agree at reported precision and exceed the 0.8110 threshold.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "get_run_scores(\"verifier-rvl-87f3dbe9-iter3\") returned run_scores.control_exec_match_avg=1 and recomputed control_exec_match_avg=1 with control_n=20. Comparison with get_run_scores(\"baseline\") found no control item scoring 0 in the verifier run and 1 in baseline; q837 scored 1 in both.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "get_run_scores(\"verifier-rvl-87f3dbe9-iter3\") returned cost_per_q_usd=0.000351 and latency_p50_s=1.046594. Cost ratio is 0.000351/0.000302=1.1623x, below 1.2x (cap 0.0003624). Latency ratio is 1.046594/0.990=1.0572x, below 1.5x (cap 1.485 s).",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "git rev-parse HEAD => b4db62e151af66321a233ef44b960194ef07c8eb. git diff --stat 71d6c39..HEAD => \"workspace/prompt.md | 4 ++++\\nworkspace/schema_notes.md | 15 ++++++++++++++-\\n2 files changed, 18 insertions(+), 1 deletion(-)\". git diff --name-only 71d6c39..HEAD lists only workspace/prompt.md and workspace/schema_notes.md. git status --porcelain produced empty output. agent_fingerprint returned combined=\"5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1\". Inspection via git diff --unified=40 71d6c39..HEAD -- workspace/ found generic schema-renaming and SQL-convention guidance only, with no dataset question text, per-question answer, or expected SQL.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "The verdict uses the independently created run verifier-rvl-87f3dbe9-iter3, experiment_id 3d3967fceadb00bc. It was created in this verifier leg with run_experiment and independently read back with get_run_scores; implementer-reported numbers and STATE.md were not used as acceptance evidence.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [],
+  "proposed_criteria": [],
+  "gamed": false
+}

@@ -1,0 +1,12 @@
+ddl_sha256=f2fe56f6db94f248
+sorting_key=(EventTime)
+rows=99997497
+parts=1
+bytes=25877409075
+parts_content_hash=1163900507693075841
+projections=[]
+skip_indexes=[]
+bench_tables=['hits']
+settings_profiles=['dashboard_profile','default','readonly']
+dashboard_profile=`dashboard_profile` SETTINGS max_execution_time = 600.
+dashboard_user=CREATE USER dashboard  DEFAULT DATABASE bench SETTINGS PROFILE `dashboard_profile`

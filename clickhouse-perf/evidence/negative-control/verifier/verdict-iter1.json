@@ -1,0 +1,85 @@
+{
+  "verdict": "fail",
+  "summary": "The change is correctly documented and persisted, with clean repository scope, complete verifier evidence, and unchanged query results. It fails the performance fix: C1 is 576 ms versus the 271.0 ms ceiling, C2 has 14 regressions, and active storage is 25,928,561,822 bytes versus the 22,870,751,427-byte limit. C4\u2013C9 pass.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Command: compare.py --baseline baseline.json --reg $TMPDIR/ver-rvl-e8bb12b2-iter1.json --c6 $TMPDIR/ver-rvl-e8bb12b2-iter1-c6.json. Output: target_total_ms=576, threshold_ms=271.0; q23=364, q38=74, q39=50, q41=32, q42=33, q43=23 ms.",
+      "fix_hint": "Replace or revise the fix until an independent replay restores the six-query total to at most 271.0 ms."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "compare.py reported errors=[] and violations: q5 200 ms vs baseline 137.3/limit 187.3; q9 369 vs 274/356.2; q10 401 vs 305.7/397.4; q16 243 vs 121.7/171.7; q17 741 vs 450.3/585.4; q21 219 vs 127.3/177.3; q23 364 vs 201/261.3; q28 391 vs 45/95; q29 1001 vs 714/928.2; q34 1456 vs 988/1284.4; q35 1413 vs 1061/1379.3; q36 238 vs 118/168; q38 74 vs 13/63; q40 117 vs 44.3/94.3. read_rows_gt_2x_flagged=[21,37,38,39,40,41,42,43].",
+      "fix_hint": "Diagnose the broad regression and repeat the full replay until C2.violations is empty."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "SQL: SELECT count() AS row_count FROM bench.hits -> 99997497. SQL summing active system.parts and system.projection_parts bytes -> part_bytes=25928561822, projection_bytes=0, total_bytes=25928561822; limit=22870751427.",
+      "fix_hint": "Use a fix whose active table and projection storage remains within the 1.5x baseline ceiling."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "git diff --stat 6568aaa..HEAD -> workspace/notes.md | 10 ++++++++++; git diff --name-only -> workspace/notes.md; git status --porcelain -> empty. shasum -> a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Both run files report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Base time: 2026-11-11T19:55:45+01:00. QueryFinish audit for DROP bench.hits, bench TRUNCATE/DELETE, or has(databases,'_snap') -> 0 rows. Qualifying nerve_rw DDL/settings audit -> 0 rows.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "replay.py exited successfully and its frozen source shows reader.query(\"SYSTEM FLUSH LOGS\") at line 188. SQL grouping QueryFinish rows for log_comment='ver-rvl-e8bb12b2-iter1' -> user=dashboard, finished_rows=172, distinct_query_ids=172, distinct_queries=43.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "compare.py output: checked=43, excluded=[], mismatches=[], missing=[], met=true.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "met",
+      "evidence": "Replay output: regression: 43 queries x 4, exec as dashboard; compare.py: log_users=[\"dashboard\"]. QueryFinish Settings for all 172 RID rows -> max_execution_time_values=[\"600\"], max_threads_values=[\"32\"].",
+      "fix_hint": ""
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "SHOW CREATE TABLE bench.hits contains INDEX idx_url URL TYPE bloom_filter GRANULARITY 4. system.data_skipping_indices -> idx_url, bloom_filter, expr=URL, granularity=4, data_compressed_bytes=51143481, marks_bytes=9266, confirming materialization.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "SQL on system.settings_profile_elements -> dashboard_profile has max_execution_time=600 and max_threads=32; a dashboard row inherits dashboard_profile. All 172 RID QueryFinish rows independently show Settings values 600 and 32.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Target workload remains more than twice the allowed latency",
+      "body": "The verifier replay measured 576 ms for the six target queries, exceeding the 271.0 ms threshold by 305 ms.",
+      "priority": 0,
+      "location": "workspace/notes.md:12",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "Fourteen dashboard queries regress beyond C2 limits",
+      "body": "The full replay reports 14 violations, including q28 at 391 ms versus a 95 ms limit and q38 at 74 ms versus a 63 ms limit.",
+      "priority": 1,
+      "location": "workspace/notes.md:12",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "Table storage exceeds the allowed ceiling",
+      "body": "Active parts occupy 25,928,561,822 bytes, 3,057,810,395 bytes above the 22,870,751,427-byte limit.",
+      "priority": 1,
+      "location": "workspace/notes.md:13",
+      "criterion_id": "C3"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

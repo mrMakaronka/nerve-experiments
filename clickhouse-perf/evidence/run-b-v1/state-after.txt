@@ -1,0 +1,12 @@
+ddl_sha256=e5679712c5897d19
+sorting_key=CounterID, EventDate, UserID, EventTime, WatchID
+rows=99997497
+parts=1
+bytes=15294314419
+parts_content_hash=7532819837191243486
+projections=[]
+skip_indexes=[]
+bench_tables=['hits']
+settings_profiles=['dashboard_profile','default','readonly']
+dashboard_profile=`dashboard_profile` SETTINGS max_execution_time = 600., use_uncompressed_cache = true, merge_tree_max_rows_to_use_cache = 23500000, merge_tree_max_bytes_to_use_cache = 6000000000, max_bytes_ratio_before_external_group_by = 0.
+dashboard_user=CREATE USER dashboard  DEFAULT DATABASE bench SETTINGS PROFILE `dashboard_profile`

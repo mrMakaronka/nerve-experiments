@@ -1,0 +1,9 @@
+event_time	query_kind	query_duration_ms	query
+2026-11-11 15:21:34	Create	10	CREATE TABLE bench.hits_new AS bench.hits ENGINE = MergeTree ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID) SETTINGS fsync_after_insert = 1, auto_statistics_types = \'\', index_granularity = 8192
+2026-11-11 15:25:05	Insert	207943	INSERT INTO bench.hits_new SELECT * FROM bench.hits SETTINGS max_insert_threads = 4
+2026-11-11 15:27:31	Optimize	134400	OPTIMIZE TABLE bench.hits_new FINAL
+2026-11-11 15:32:46	Optimize	246761	OPTIMIZE TABLE bench.hits_new FINAL
+2026-11-11 15:33:10	Rename	0	EXCHANGE TABLES bench.hits AND bench.hits_new FORMAT Native
+2026-11-11 15:33:14	Rename	0	RENAME TABLE bench.hits_new TO bench.hits_faulted_backup
+2026-11-11 15:40:44	Create	1	ALTER SETTINGS PROFILE dashboard_profile SETTINGS max_execution_time = 600, max_threads_min_free_memory_per_thread = 268435456, max_bytes_ratio_before_external_group_by = 0.8
+2026-11-11 15:42:07	Create	1	ALTER SETTINGS PROFILE dashboard_profile SETTINGS max_execution_time = 600, max_threads_min_free_memory_per_thread = 268435456, max_bytes_ratio_before_external_group_by = 0, max_bytes_before_external_group_by = 7516192768

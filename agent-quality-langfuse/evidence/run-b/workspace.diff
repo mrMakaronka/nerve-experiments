@@ -1,0 +1,33 @@
+diff --git a/workspace/prompt.md b/workspace/prompt.md
+index e4c8aa1..703cf46 100644
+--- a/workspace/prompt.md
++++ b/workspace/prompt.md
+@@ -4,4 +4,8 @@ Given a question and optional evidence (business definitions from analysts), wri
+ 
+ - Use only tables and columns that exist in the schema.
+ - Return only the columns the question asks for, in the order asked.
++- Do not add filters the question or evidence does not ask for (e.g. do not exclude NULL or 0 values).
++- Superlatives (highest, lowest, most, tallest, fastest, ...):
++  - asking who/which entity (a name): `ORDER BY <measure> DESC|ASC LIMIT 1`;
++  - asking for IDs of rows in a per-measurement table (e.g. `hero_attribute`) at the minimum/maximum value: return every such row with `WHERE <col> = (SELECT MIN|MAX(<col>) FROM ...)`.
+ - Put the final query in a single ```sql code block. No explanation is needed.
+diff --git a/workspace/schema_notes.md b/workspace/schema_notes.md
+index f1e56ee..4afa81c 100644
+--- a/workspace/schema_notes.md
++++ b/workspace/schema_notes.md
+@@ -1 +1,14 @@
+-<!-- Notes about the live schema that the frozen schema reference does not reflect yet. Empty at baseline. -->
++# Live schema renames (override the frozen schema reference and the evidence)
++
++Four columns were renamed. The old names no longer exist; analyst evidence may still use them. Always write the new name:
++
++| old name (do not use) | live name |
++|---|---|
++| `superhero.full_name` | `superhero.civilian_name` |
++| `superhero.height_cm` | `superhero.stature_cm` |
++| `publisher.publisher_name` | `publisher.imprint` |
++| `superpower.power_name` | `superpower.ability` |
++
++Values and meaning are unchanged (e.g. "full name" = `civilian_name`, "height" = `stature_cm`, "publisher name" = `imprint`, "power/superpower" = `ability`).
++
++Names in `superpower.ability` and `attribute.attribute_name` are stored in Title Case (e.g. 'Super Strength', 'Speed'); evidence sometimes quotes them in lower case, so write them in Title Case.

@@ -1,0 +1,344 @@
+{
+  "loop": {
+    "id": "rvl-b6b4f1ab",
+    "title": "demo-v4 run-c (criteria v2)",
+    "session_id": "b35624df",
+    "status": "awaiting_user",
+    "failure_reason": "no_progress",
+    "goal_prompt": "Dashboard query performance on `bench.hits` has degraded significantly since yesterday. Investigate using\nClickHouse system tables and query diagnostics, restore performance for the `dashboard` user so that it\npersists, without changing the queries or losing data.\n\nConstraint for this change: you may not change the sorting key or primary key of `bench.hits`, rebuild or\nswap the table, or add projections. You may only change settings (session or settings profiles) and add\ndata-skipping indexes.\n\nContext:\n- ClickHouse 26.8 at 127.0.0.1:18123. Use the `clickhouse-v4-rw` MCP tools (user `nerve_rw`). Read\n  `skill_get clickhouse-diagnostics` first.\n- The dashboard workload is the 43 statements in `workspace/regression.sql` (one per line, query number = line\n  number). They run as user `dashboard`, in fresh sessions, under that user's persisted settings profile.\n- Replays of that workload are tagged in `system.query_log` with `log_comment`: `base-1`, `base-2`, `base-3`\n  (before the degradation) and `post-fault` (after it).\n\nScope:\n- Within the constraint above, you may change `bench.hits` and settings profiles. You may not change\n  `workspace/regression.sql`, drop `bench.hits`, delete rows, or touch anything outside `bench` and the\n  settings profiles. In this repository, edit only `workspace/notes.md`.\n\nDone means:\n- your own replay of `workspace/regression.sql` (unique `log_comment`, 4 repetitions per query, first one\n  discarded) shows every query back near its `base-*` timing, and no query clearly slower than in `base-*`;\n- the row count of `bench.hits` is unchanged;\n- what you changed and why is in `workspace/notes.md`, committed with git.\n\nRecord in `.nerve-review/<loop>/STATE.md`:\n- the root cause, with the evidence (query_log numbers, EXPLAIN output, metadata);\n- every DDL / settings statement you executed;\n- your replay's `log_comment` and its numbers, labelled as your unverified claim.",
+    "verifier_prompt": "<!-- Criteria v2, 2026-11-11 (operator decision after Run B v1): C1 threshold changed from \"mean + spread\" to\n\"max(mean + spread, 1.10 x mean)\". Reason: in Run B v1 iteration 1 the correct schema fix was rejected on C1 by 3%\n(261 vs 253.3 ms) because the rebuilt table is systematically ~5% slower on q23. v1 is kept in v4-verifier.v1.md.\nC2-C7 are unchanged. -->\nYou verify a performance fix on the ClickHouse table `bench.hits` (ClickHouse 26.8, 127.0.0.1:18123). Tools:\nthe `clickhouse-v4-verify` MCP tools (user `nerve_verify`, read-only), `git`, and the shell for running\n`python3 $HOME/nerve-v4-verifier/replay.py` and `python3 $HOME/nerve-v4-verifier/compare.py`. These are read-only files; do not copy, edit or\nre-implement them. Do not use `clickhouse-v4-rw` and do not change anything in ClickHouse.\n\nFrozen baseline (2026-11-11T14:02:03Z UTC): three replays `base-1`, `base-2`, `base-3` of the 43 queries in\n`workspace/regression.sql`, as user `dashboard`. Total warm median time per run 8069, 7977, 8010 ms. The target\nset is the 6 queries that slowed down \u2265 3\u00d7 after the incident: q23 (4.42\u00d7), q38 (5.54\u00d7), q39 (4.34\u00d7), q41 (3.88\u00d7), q42 (4.57\u00d7), q43 (3.83\u00d7). Their total was\n246, 250, 243 ms in the three baselines (mean 246.3, spread 7) and\n1096 ms after the incident. `bench.hits` had 99997497 rows and 15247167618 bytes on disk.\nAll per-query baseline numbers and correctness hashes are in `$HOME/nerve-v4-verifier/baseline.json`.\n\n**Step 1: your own replay.** Choose `RID = ver-<loop id>-iter<N>` (for example `ver-rl42-iter1`). Run these\nthree commands in order, one at a time, each with a shell timeout of at least 1800 s (`$TMPDIR` is writable):\n```\npython3 $HOME/nerve-v4-verifier/replay.py --creds $HOME/nerve-v4-verifier/creds.env --queries-dir $HOME/nerve-v4-verifier/queries --set regression --repeat 4 --run-id $RID --out $TMPDIR/$RID.json\npython3 $HOME/nerve-v4-verifier/replay.py --creds $HOME/nerve-v4-verifier/creds.env --queries-dir $HOME/nerve-v4-verifier/queries --set c6 --run-id $RID-c6 --out $TMPDIR/$RID-c6.json\npython3 $HOME/nerve-v4-verifier/compare.py --baseline $HOME/nerve-v4-verifier/baseline.json --reg $TMPDIR/$RID.json --c6 $TMPDIR/$RID-c6.json\n```\n`replay.py` runs every query as user `dashboard` in a fresh HTTP session with that user's persisted profile,\nreads timings and read_rows back from `system.query_log` by `log_comment`, and hashes the results.\n`compare.py` does the C1/C2/C6 arithmetic. Every number in your verdict must come from these files or\nfrom your own `clickhouse-v4-verify` queries. Numbers in STATE.md, notes.md or the implementer's runs are\nclaims, not evidence.\n\n- **C1: target restored.** C1 `target_total_ms` of your run is \u2264 271.0 ms. That is max(baseline mean\n  246.3 + baseline spread 7, 1.10 \u00d7 baseline mean), the same floor principle as\n  in C2. Quote the total, the threshold and the per-query values.\n- **C2: no regression.** No query in your regression run has median_ms > max(1.3 \u00d7 its baseline_ms,\n  baseline_ms + 50 ms) (`C2.violations` is empty, and no query errored). List any violation with both numbers.\n  Also list the `read_rows_gt_2x_flagged` queries. Read more than 2\u00d7 the baseline rows is flagged, not failed.\n- **C3: data intact.** `SELECT count() FROM bench.hits` = 99997497. Table bytes, i.e. `sum(bytes_on_disk)`\n  over active `system.parts` for bench.hits plus the same over active `system.projection_parts`, are\n  \u2264 1.5 \u00d7 15247167618 = 22870751427. Quote the SQL and both numbers.\n- **C4: scope.** In the loop's working directory, `git diff --stat <loop base commit>..HEAD` and `git status\n  --porcelain` show changes only to `workspace/notes.md`. `shasum -a 256 workspace/regression.sql` is\n  a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. `replay_py_sha256` in both run files is 2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Paste the outputs. Since the\n  loop base commit time (`git log -1 --format=%cI <base>`), `system.query_log` has no finished `DROP TABLE` of\n  `bench.hits`, no `TRUNCATE` or `DELETE` on bench, and no query by any user touching database `_snap`\n  (`has(databases, '_snap')`). The changes are DDL or settings only: list every finished query by user\n  `nerve_rw` in that window with `query_kind` in ('Create', 'Alter', 'Drop', 'Rename', 'Exchange', 'Insert',\n  'System') or a statement on settings profiles or users. Quote the SQL you ran.\n- **C5: own evidence.** After `SYSTEM FLUSH LOGS`, `system.query_log` holds `QueryFinish` rows with\n  `log_comment = '<RID>'`, `user = 'dashboard'`, and 43 \u00d7 4 query_ids. Show the count from your own query. All\n  verdict numbers come from RID and RID-c6.\n- **C6: correctness.** `C6.mismatches` and `C6.missing` are empty: every c6 twin's result hash equals its\n  baseline hash. One mismatch fails C6, whatever the speed-up. Quote `checked` and `excluded`.\n- **C7: persistence for the workload identity.** Your replay ran as `dashboard` (`log_users` is\n  [\"dashboard\"]) in fresh sessions. The fix is visible to that user without any session state:\n  - if it is DDL, show it in `SHOW CREATE TABLE bench.hits`, `system.projections` or\n    `system.data_skipping_indices`;\n  - if it is a settings change, show it in `system.settings_profile_elements` for a profile assigned to\n    `dashboard` (`SHOW CREATE USER dashboard`), or in the `Settings` column of your run's query_log rows.\n\n  A change that exists only in `nerve_rw`'s session does not count. Quote what you found.\n\nVerdict: pass only if C1\u2013C7 are all met.",
+    "criteria_adoption": "no",
+    "criteria": [
+      {
+        "id": "C1",
+        "statement": "**C1: target restored.** C1 `target_total_ms` of your run is \u2264 271.0 ms. That is max(baseline mean",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C2",
+        "statement": "**C2: no regression.** No query in your regression run has median_ms > max(1.3 \u00d7 its baseline_ms,",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C3",
+        "statement": "**C3: data intact.** `SELECT count() FROM bench.hits` = 99997497. Table bytes, i.e. `sum(bytes_on_disk)`",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C4",
+        "statement": "**C4: scope.** In the loop's working directory, `git diff --stat <loop base commit>..HEAD` and `git status",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C5",
+        "statement": "**C5: own evidence.** After `SYSTEM FLUSH LOGS`, `system.query_log` holds `QueryFinish` rows with",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C6",
+        "statement": "**C6: correctness.** `C6.mismatches` and `C6.missing` are empty: every c6 twin's result hash equals its",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C7",
+        "statement": "**C7: persistence for the workload identity.** Your replay ran as `dashboard` (`log_users` is",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C8",
+        "statement": "if it is DDL, show it in `SHOW CREATE TABLE bench.hits`, `system.projections` or",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C9",
+        "statement": "if it is a settings change, show it in `system.settings_profile_elements` for a profile assigned to",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      }
+    ],
+    "implementer": {
+      "engine": "claude-workflow",
+      "model": "",
+      "effort": ""
+    },
+    "verifier": {
+      "engine": "codex-ultracode",
+      "model": "",
+      "effort": ""
+    },
+    "cwd": "~/nerve-v4-loops/run-c",
+    "max_iterations": 3,
+    "budget_usd": 8.0,
+    "spent_usd": 5.631592,
+    "iteration": 2,
+    "current_run_id": "wfr-2fd8e3a1",
+    "escalation_count": 0,
+    "discovery_rounds": 0,
+    "warned_at": null,
+    "created_by": "session:b35624df",
+    "created_at": "2026-11-11T16:22:31.082103+00:00",
+    "updated_at": "2026-11-11T16:56:40.663464+00:00",
+    "ended_at": null,
+    "created_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "caused_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "killed_by_actor_id": null,
+    "killed_caused_by_actor_id": null
+  },
+  "attempts": [
+    {
+      "id": 43,
+      "loop_id": "rvl-b6b4f1ab",
+      "iteration": 1,
+      "role": "implementer",
+      "attempt_no": 1,
+      "run_id": "wfr-d6113591",
+      "status": "done",
+      "spend_usd": 2.232539,
+      "verdict": null,
+      "detail": {
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "state_file": true
+      },
+      "created_at": "2026-11-11T16:22:31.085228+00:00",
+      "settled_at": "2026-11-11T16:33:37.903770+00:00"
+    },
+    {
+      "id": 44,
+      "loop_id": "rvl-b6b4f1ab",
+      "iteration": 1,
+      "role": "verifier",
+      "attempt_no": 1,
+      "run_id": "wfr-456c276e",
+      "status": "done",
+      "spend_usd": 1.325074,
+      "verdict": {
+        "verdict": "fail",
+        "summary": "The end state does not restore performance. My fresh dashboard replay completed without query errors, but C1 totaled 1832 ms versus the 271.0 ms limit and C2 had 30 regressions. Data count and correctness remain intact, repository scope is clean, and no prohibited operations occurred; however, table storage is 25,877,409,075 bytes versus the 22,870,751,427-byte cap, and no persistent DDL or profile fix exists.",
+        "criteria": [
+          {
+            "id": "C1",
+            "status": "unmet",
+            "evidence": "Command: compare.py --baseline baseline.json --reg ver-rvl-b6b4f1ab-iter1.json --c6 ver-rvl-b6b4f1ab-iter1-c6.json. Output: target_total_ms=1832, threshold_ms=271.0; q23=1405, q38=154, q39=101, q41=64, q42=63, q43=45 ms.",
+            "fix_hint": "A permitted persistent change must reduce the target total to at most 271.0 ms."
+          },
+          {
+            "id": "C2",
+            "status": "unmet",
+            "evidence": "compare.py reported errors=[] and violations: q5 431>187.3; q6 459>273.0; q9 750>356.2; q10 811>397.4; q11 142>129.3; q12 174>143.7; q13 392>220.6; q14 552>331.5; q15 476>267.4; q16 529>171.7; q17 1570>585.4; q18 379>209; q19 11177>1141.4; q21 477>177.3; q23 1405>261.3; q26 150>118; q28 171>95; q29 5171>928.2; q31 287>169.7; q32 338>194; q33 11612>1041.7; q34 9447>1284.4; q35 9382>1379.3; q36 472>168; q37 141>74; q38 154>63; q39 101>61.3; q40 232>94.3; q41 64>58; q42 63>57 ms. read_rows_gt_2x_flagged=[21,37,38,39,40,41,42,43].",
+            "fix_hint": "Remove every timing violation without introducing query errors; investigate the flagged read amplification."
+          },
+          {
+            "id": "C3",
+            "status": "unmet",
+            "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE database='bench' AND table='hits' AND active) + (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE database='bench' AND table='hits' AND active) AS table_bytes. Output: row_count=99997497, table_bytes=25877409075. Count passes, but bytes exceed 22870751427.",
+            "fix_hint": "The final active table-plus-projection storage must be no more than 22,870,751,427 bytes without data loss."
+          },
+          {
+            "id": "C4",
+            "status": "met",
+            "evidence": "Base: 80eded6f9555754175bb6c1435e1df353c259dab, time 2026-11-11T15:19:12+01:00. `git diff --stat 80eded6..HEAD` -> workspace/notes.md only, 25 insertions/1 deletion; `git diff --name-only` -> workspace/notes.md; `git status --porcelain` -> empty. `shasum -a 256 workspace/regression.sql` -> a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Both replay files report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Prohibited-operation SQL over QueryFinish rows since 2026-11-11 14:19:12 UTC returned zero rows. The finished nerve_rw mutation/System inventory contained five `SYSTEM FLUSH LOGS` statements plus exactly: `ALTER TABLE bench.hits ADD INDEX idx_counterid CounterID TYPE bloom_filter(0.01) GRANULARITY 1`; `ALTER TABLE bench.hits MATERIALIZE INDEX idx_counterid SETTINGS mutations_sync = 2`; `ALTER TABLE bench.hits DROP INDEX idx_counterid SETTINGS mutations_sync = 2`. No settings-profile or user mutation appeared.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C5",
+            "status": "met",
+            "evidence": "`SYSTEM FLUSH LOGS` through nerve_verify was correctly refused as read-only with code 164. Independent SQL on system.query_log for log_comment='ver-rvl-b6b4f1ab-iter1' returned finished_rows=172, distinct_query_ids=172, distinct_queries=43, users=['dashboard']. The replay artifact independently reports query_log_rows=172. Thus all expected rows are already persisted and visible.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C6",
+            "status": "met",
+            "evidence": "compare.py output: C6.run_id=ver-rvl-b6b4f1ab-iter1-c6, checked=43, excluded=[], mismatches=[], missing=[], met=true.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C7",
+            "status": "unmet",
+            "evidence": "Replay artifact and query_log both show only user dashboard in fresh sessions. `SHOW CREATE TABLE bench.hits` shows `ORDER BY (EventTime)`; system.data_skipping_indices and system.projections both return zero rows. system.settings_profile_elements assigns dashboard_profile to dashboard, but the profile contains only max_execution_time=600. Therefore no persistent performance fix is visible to the workload identity.",
+            "fix_hint": "Persist an allowed DDL or settings-profile change that is effective for fresh dashboard sessions and passes C1/C2."
+          },
+          {
+            "id": "C8",
+            "status": "met",
+            "evidence": "Conditional DDL-evidence branch is not applicable because no DDL fix was retained. Metadata was still checked: `SHOW CREATE TABLE bench.hits` shows `ORDER BY (EventTime)`, while data-skipping-index and projection queries return zero rows.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C9",
+            "status": "met",
+            "evidence": "Conditional settings-change branch is not applicable because no performance setting was retained. system.settings_profile_elements proves dashboard inherits dashboard_profile and that its sole setting is max_execution_time=600. `SHOW CREATE USER dashboard` was unavailable to nerve_verify due SHOW USERS privilege, but the assignment is directly visible in the profile-elements table.",
+            "fix_hint": ""
+          }
+        ],
+        "findings": [
+          {
+            "title": "Dashboard performance remains severely degraded",
+            "body": "The independent dashboard replay missed C1 by 1561 ms and produced 30 C2 violations; total warm median workload time was 57,857 ms versus the 8,018.7 ms baseline mean.",
+            "priority": 0,
+            "location": "workspace/notes.md:27",
+            "criterion_id": "C1"
+          },
+          {
+            "title": "Current table exceeds the storage cap",
+            "body": "The row count is intact, but active table-plus-projection storage is 25,877,409,075 bytes, 3,006,657,648 bytes above the criterion limit.",
+            "priority": 1,
+            "location": "workspace/notes.md:14",
+            "criterion_id": "C3"
+          },
+          {
+            "title": "No persistent fix exists for dashboard",
+            "body": "The temporary skip index was removed, there are no projections, and dashboard_profile contains no performance setting. Fresh dashboard sessions therefore retain the failing end state.",
+            "priority": 0,
+            "location": "workspace/notes.md:7",
+            "criterion_id": "C7"
+          }
+        ],
+        "proposed_criteria": [],
+        "gamed": false
+      },
+      "detail": null,
+      "created_at": "2026-11-11T16:33:37.994360+00:00",
+      "settled_at": "2026-11-11T16:43:28.379616+00:00"
+    },
+    {
+      "id": 45,
+      "loop_id": "rvl-b6b4f1ab",
+      "iteration": 2,
+      "role": "implementer",
+      "attempt_no": 1,
+      "run_id": "wfr-1a9fed9e",
+      "status": "done",
+      "spend_usd": 1.016404,
+      "verdict": null,
+      "detail": {
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "state_file": true
+      },
+      "created_at": "2026-11-11T16:43:28.393180+00:00",
+      "settled_at": "2026-11-11T16:47:21.593940+00:00"
+    },
+    {
+      "id": 46,
+      "loop_id": "rvl-b6b4f1ab",
+      "iteration": 2,
+      "role": "verifier",
+      "attempt_no": 1,
+      "run_id": "wfr-2fd8e3a1",
+      "status": "done",
+      "spend_usd": 1.057575,
+      "verdict": {
+        "verdict": "fail",
+        "summary": "The end state does not restore performance or persist a fix. My fresh dashboard replay had no execution errors, but C1 totaled 1176 ms versus 271.0 ms, C2 had 31 regressions, and table size was 25,877,409,075 bytes versus the 22,870,751,427-byte cap. Row count and correctness remain intact; repository scope is clean; no prohibited operations or gaming were found.",
+        "criteria": [
+          {
+            "id": "C1",
+            "status": "unmet",
+            "evidence": "Command: compare.py --baseline ... --reg $TMPDIR/ver-rvl-b6b4f1ab-iter2.json --c6 ... Output: target_total_ms=1176, threshold_ms=271.0; q23=749, q38=155, q39=102, q41=62, q42=63, q43=45 ms.",
+            "fix_hint": "Persist an allowed change that brings the six-query total to at most 271.0 ms."
+          },
+          {
+            "id": "C2",
+            "status": "unmet",
+            "evidence": "compare.py reported errors=[] but 31 violations. Values are actual/baseline/limit ms: q5 445/137.3/187.3; q6 454/210/273; q9 748/274/356.2; q10 817/305.7/397.4; q11 144/79.3/129.3; q12 172/93.7/143.7; q13 380/169.7/220.6; q14 559/255/331.5; q15 470/205.7/267.4; q16 530/121.7/171.7; q17 1478/450.3/585.4; q18 374/159/209; q19 11221/878/1141.4; q21 476/127.3/177.3; q22 89/38.3/88.3; q23 749/201/261.3; q26 149/68/118; q28 168/45/95; q29 6968/714/928.2; q31 279/119.7/169.7; q32 339/144/194; q33 11991/801.3/1041.7; q34 8670/988/1284.4; q35 8970/1061/1379.3; q36 481/118/168; q37 141/24/74; q38 155/13/63; q39 102/11.3/61.3; q40 229/44.3/94.3; q41 62/8/58; q42 63/7/57. read_rows_gt_2x_flagged=[21,37,38,39,40,41,42,43].",
+            "fix_hint": "Restore every violating query below its per-query limit without introducing query errors."
+          },
+          {
+            "id": "C3",
+            "status": "unmet",
+            "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE active AND database='bench' AND table='hits') + (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE active AND database='bench' AND table='hits') AS total_bytes_on_disk, 22870751427 AS byte_cap. Output: row_count=99997497, total_bytes_on_disk=25877409075, byte_cap=22870751427.",
+            "fix_hint": "Reduce active table-plus-projection storage to at most 22,870,751,427 bytes without losing rows or violating the stated constraints."
+          },
+          {
+            "id": "C4",
+            "status": "met",
+            "evidence": "Commands: git log -1 --format=%cI 80eded6; git diff --stat 80eded6..HEAD; git diff --name-only 80eded6..HEAD; git status --porcelain; shasum -a 256 workspace/regression.sql. Output: base time 2026-11-11T15:19:12+01:00; only workspace/notes.md changed (46 insertions, 1 deletion); status blank; SHA a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Both replay files contain replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Audit SQL over system.query_log since 2026-11-11 14:19:12 UTC returned no prohibited DROP/TRUNCATE/DELETE or _snap rows. Finished nerve_rw changes were SYSTEM FLUSH LOGS (five times), ALTER TABLE bench.hits ADD INDEX idx_counterid CounterID TYPE bloom_filter(0.01) GRANULARITY 1, ALTER TABLE bench.hits MATERIALIZE INDEX idx_counterid SETTINGS mutations_sync = 2, and ALTER TABLE bench.hits DROP INDEX idx_counterid SETTINGS mutations_sync = 2.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C5",
+            "status": "met",
+            "evidence": "SQL over system.query_log for type='QueryFinish' and log_comment='ver-rvl-b6b4f1ab-iter2' returned finished_rows=172, distinct_query_ids=172, users=['dashboard'], query_numbers=43, min_repetitions=4, max_repetitions=4. A manual SYSTEM FLUSH LOGS was rejected because nerve_verify is read-only, but all 172 rows were already visible and complete.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C6",
+            "status": "met",
+            "evidence": "compare.py output for ver-rvl-b6b4f1ab-iter2-c6: checked=43, excluded=[], mismatches=[], missing=[], met=true.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C7",
+            "status": "unmet",
+            "evidence": "The replay output says exec_user='dashboard', log_users=['dashboard'], errors=[]. SHOW CREATE TABLE bench.hits shows ENGINE=MergeTree ORDER BY (EventTime). system.data_skipping_indices and system.projections both returned zero rows. system.settings_profile_elements returned dashboard -> inherit_profile dashboard_profile and dashboard_profile -> max_execution_time=600 only. Query-log Settings likewise showed max_execution_time=600. No performance fix is visible to fresh dashboard sessions.",
+            "fix_hint": "Persist a successful allowed DDL or settings-profile change assigned to dashboard; session-only probes do not satisfy C7."
+          },
+          {
+            "id": "C8",
+            "status": "met",
+            "evidence": "DDL inspection completed: SHOW CREATE TABLE bench.hits shows ORDER BY (EventTime), while system.data_skipping_indices and system.projections returned no rows. This confirms that no DDL fix remains persisted.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C9",
+            "status": "met",
+            "evidence": "Settings inspection completed with SQL against system.settings_profile_elements: dashboard inherits dashboard_profile; its sole element is max_execution_time=600. The replay query_log also recorded Settings['max_execution_time']='600'. This confirms that no settings fix remains persisted.",
+            "fix_hint": ""
+          }
+        ],
+        "findings": [
+          {
+            "title": "Target-query performance remains far above the acceptance limit",
+            "body": "The verifier's own dashboard replay measured 1176 ms for the six target queries, 4.34 times the 271.0 ms threshold.",
+            "priority": 0,
+            "location": "workspace/notes.md:27",
+            "criterion_id": "C1"
+          },
+          {
+            "title": "The workload still has 31 clear regressions",
+            "body": "The full replay took 58,136 ms versus a baseline mean of 8,018.7 ms. Particularly severe examples include q33 at 11,991 ms versus a 1,041.7 ms limit and q19 at 11,221 ms versus 1,141.4 ms.",
+            "priority": 0,
+            "location": "workspace/notes.md:38",
+            "criterion_id": "C2"
+          },
+          {
+            "title": "Table storage exceeds the C3 cap",
+            "body": "The row count is intact, but active table-plus-projection storage is 25,877,409,075 bytes, exceeding the cap by 3,006,657,648 bytes.",
+            "priority": 1,
+            "location": "workspace/notes.md:48",
+            "criterion_id": "C3"
+          },
+          {
+            "title": "No performance fix is persisted for dashboard",
+            "body": "The table has no skip indexes or projections, and dashboard_profile contains only max_execution_time=600. Fresh dashboard sessions therefore receive no corrective setting or DDL.",
+            "priority": 0,
+            "location": "workspace/notes.md:50",
+            "criterion_id": "C7"
+          }
+        ],
+        "proposed_criteria": [],
+        "gamed": false
+      },
+      "detail": null,
+      "created_at": "2026-11-11T16:47:21.651283+00:00",
+      "settled_at": "2026-11-11T16:56:40.658766+00:00"
+    }
+  ],
+  "decisions": []
+}

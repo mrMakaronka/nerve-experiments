@@ -1,0 +1,7 @@
+run_id,kind,verdict,oracle,iterations,t_loop_start,t_mitigation,t_verdict,loop_minutes,cost_usd,c1_value,c2_value,verifier_queries_count,notes
+rep1-B,B,pass,success,1,2026-11-10 03:21:28,2026-11-10 03:28:48,2026-11-10 03:39:05,17.6,2.4,0,21.5,1,status=passed; C1:met C2:met C3:met C4:met C5:met
+rep1-C,C,fail,failure,1,2026-11-10 03:55:41,2026-11-10 03:56:16,2026-11-10 04:06:37,10.9,1.43,87.57,19452.1,5,status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met
+rep2-B,B,needs_improvement,success,3,2026-11-10 04:25:05,2026-11-10 04:25:55,2026-11-10 04:48:36,23.5,5.33,0,26.1,7,"status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second window had zero user-facing errors and 1.381× baseline edge volume, while load-"
+rep2-C,C,fail,failure,1,2026-11-10 05:05:21,2026-11-10 05:05:52,2026-11-10 05:14:23,9.0,1.23,91.64,16855.9,1,status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met
+rep3-B,B,pass,success,1,2026-11-10 05:33:13,2026-11-10 05:33:49,2026-11-10 05:43:04,9.9,1.63,0,20.7,1,status=passed; C1:met C2:met C3:met C4:met C5:met
+rep3-C,C,fail,failure,1,2026-11-10 06:16:43,2026-11-10 06:17:14,2026-11-10 06:26:06,9.4,1.25,87.76,19380.6,1,status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met

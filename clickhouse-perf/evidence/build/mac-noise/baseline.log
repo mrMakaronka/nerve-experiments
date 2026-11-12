@@ -1,0 +1,11 @@
+[base-1] regression: 43 queries x 4, exec as dashboard
+[base-1] total_median_ms=27343 p95=3138 ok=43/43 query_log_rows=172 merge_wait={'waited_s': 0.0, 'timeout_hit': False}
+[base-2] regression: 43 queries x 4, exec as dashboard
+[base-2] total_median_ms=19649 p95=1088 ok=43/43 query_log_rows=172 merge_wait={'waited_s': 0.0, 'timeout_hit': False}
+[base-3] regression: 43 queries x 4, exec as dashboard
+[base-3] total_median_ms=20393 p95=1971 ok=43/43 query_log_rows=172 merge_wait={'waited_s': 0.0, 'timeout_hit': False}
+[base-c6] c6: 43 queries x 1, exec as dashboard
+[base-c6] total_median_ms=52571 p95=2560 ok=43/43 query_log_rows=43 merge_wait={'waited_s': 0.0, 'timeout_hit': False}
+[ctl-base] control: 10 queries x 4, exec as dashboard
+[ctl-base] total_median_ms=457 p95=225 ok=10/10 query_log_rows=40 merge_wait={'waited_s': 0.0, 'timeout_hit': False}
+state unchanged during baseline

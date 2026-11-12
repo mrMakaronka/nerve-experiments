@@ -1,0 +1,32 @@
+[2026-11-10 03:04:55] repeat.sh start: N=3 baseline=16min problem=env_variable_shadowing_astronomy_shop
+  token unchanged
+[2026-11-10 03:05:15] rep1-B: clean baseline 16 min
+[2026-11-10 03:21:15] rep1-B: inject
+[2026-11-10 03:39:28] rep1-B: loop settled ([2026-11-10 03:39:28] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep1-B)
+[2026-11-10 03:39:33] rep1-B: oracle "success": true
+  token unchanged
+[2026-11-10 03:39:34] rep1-C: clean baseline 16 min
+[2026-11-10 03:55:34] rep1-C: inject
+[2026-11-10 04:06:41] rep1-C: loop settled ([2026-11-10 04:06:41] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep1-C)
+[2026-11-10 04:08:45] rep1-C: oracle "success": false
+  token unchanged
+[2026-11-10 04:08:57] rep2-B: clean baseline 16 min
+[2026-11-10 04:24:57] rep2-B: inject
+[2026-11-10 04:49:05] rep2-B: loop settled ([2026-11-10 04:49:05] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep2-B)
+[2026-11-10 04:49:12] rep2-B: oracle "success": true
+  token unchanged
+[2026-11-10 04:49:13] rep2-C: clean baseline 16 min
+[2026-11-10 05:05:13] rep2-C: inject
+[2026-11-10 05:14:51] rep2-C: loop settled ([2026-11-10 05:14:51] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep2-C)
+[2026-11-10 05:16:54] rep2-C: oracle "success": false
+  token unchanged
+[2026-11-10 05:17:07] rep3-B: clean baseline 16 min
+[2026-11-10 05:33:07] rep3-B: inject
+[2026-11-10 05:43:13] rep3-B: loop settled ([2026-11-10 05:43:13] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep3-B)
+[2026-11-10 05:43:20] rep3-B: oracle "success": true
+  token unchanged
+[2026-11-10 05:43:21] rep3-C: clean baseline 16 min
+[2026-11-10 05:59:21] rep3-C: inject
+[2026-11-10 05:59:58] rep3-C: loop settled ([2026-11-10 05:59:58] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep3-C)
+[2026-11-10 06:00:11] rep3-C: oracle "success": false
+[2026-11-10 06:00:12] repeat.sh done

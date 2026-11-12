@@ -1,0 +1,71 @@
+{
+  "verdict": "needs_improvement",
+  "summary": "The persistent schema repair, data integrity, scope, dashboard identity, correctness, and no-regression checks all pass. However, the independent dashboard replay missed C1: the six target queries totaled 261 ms against the required maximum of 253.3 ms. Because every pinned criterion must pass, iteration 1 cannot receive a pass.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Command: python3 $HOME/nerve-v4-verifier/compare.py --baseline $HOME/nerve-v4-verifier/baseline.json --reg $TMPDIR/ver-rvl-4e86c126-iter1.json --c6 $TMPDIR/ver-rvl-4e86c126-iter1-c6.json. Output: target_total_ms=261, threshold_ms=253.3, met=false; per-query milliseconds: q23=211, q38=15, q39=12, q41=8, q42=8, q43=7.",
+      "fix_hint": "Improve the target workload enough to bring an independent dashboard replay to 253.3 ms or less; q23 accounts for 211 of the 261 ms."
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "The same compare command reported C2.violations=[], errors=[], read_rows_gt_2x_flagged=[], total_median_ms=8395, and baseline_total_mean_ms=8018.7.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE active AND database='bench' AND table='hits') AS base_bytes, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE active AND database='bench' AND table='hits') AS projection_bytes, base_bytes+projection_bytes AS total_bytes. Output: row_count=99997497, base_bytes=15294314419, projection_bytes=0, total_bytes=15294314419. The total is below 22870751427.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Shell output: BASE=80eded6f9555754175bb6c1435e1df353c259dab; git diff --stat BASE..HEAD => workspace/notes.md | 30 +++++++++++++++++++++++++++++-; git diff --name-only => workspace/notes.md; git status --porcelain => empty; shasum => a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219 workspace/regression.sql. Both verifier run files report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Since base time 2026-11-11T14:19:12Z, the forbidden-operation SQL returned zero rows. Finished nerve_rw changes were CREATE TABLE bench.hits_fixed ... ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID); INSERT INTO bench.hits_fixed SELECT * FROM bench.hits ...; OPTIMIZE TABLE bench.hits_fixed FINAL; EXCHANGE TABLES bench.hits AND bench.hits_fixed; DROP TABLE bench.hits_fixed SYNC; and SYSTEM FLUSH LOGS twice. No settings-profile/user statement appeared.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "SQL over system.query_log for log_comment='ver-rvl-4e86c126-iter1' and type='QueryFinish' returned finished_rows=172, distinct_query_ids=172, users=['dashboard'], query_numbers=43, min_repetitions=4, max_repetitions=4.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "compare.py output: checked=43, excluded=[], mismatches=[], missing=[], met=true. The c6 run used RID ver-rvl-4e86c126-iter1-c6 and the pinned replay script hash.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "met",
+      "evidence": "The replay output says 'exec as dashboard'; compare.py reports exec_user='dashboard' and log_users=['dashboard']. Query-log SQL independently returned user='dashboard' and max_execution_time='600'. system.settings_profile_elements contains dashboard_profile/max_execution_time=600 and user dashboard inheriting dashboard_profile. SHOW CREATE TABLE bench.hits exposes the persistent ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID).",
+      "fix_hint": ""
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "SQL: SHOW CREATE TABLE bench.hits. Output includes ENGINE=MergeTree and ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID). Queries of system.projections and system.data_skipping_indices returned no rows, so the persistent repair is the base table sorting key.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "No settings change was used, so the conditional settings-change requirement is not applicable. The mutation audit found no settings-profile/user statement. Current metadata shows dashboard inherits dashboard_profile, whose max_execution_time is 600; the verifier replay's query_log rows also show 600.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Independent dashboard replay exceeds the C1 target ceiling",
+      "body": "RID ver-rvl-4e86c126-iter1 produced 261 ms across q23, q38, q39, q41, q42, and q43. The pinned maximum is 253.3 ms, so C1 is missed by 7.7 ms despite the substantial recovery from the 1096 ms post-incident result.",
+      "priority": 1,
+      "location": "ClickHouse bench.hits; verifier run ver-rvl-4e86c126-iter1",
+      "criterion_id": "C1"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

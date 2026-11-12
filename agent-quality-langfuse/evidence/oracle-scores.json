@@ -1,0 +1,67 @@
+{
+ "baseline": {
+  "run_name": "oracle-baseline",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "exec_match_avg": 0.85,
+  "control_n": 0,
+  "control_exec_match_avg": null,
+  "cost_per_q_usd": 0.000317,
+  "latency_avg_s": 1.312,
+  "latency_p50_s": 1.016,
+  "sql_errors": 0,
+  "dataset": "oracle (local)"
+ },
+ "post-fault": {
+  "run_name": "oracle-post-fault",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "exec_match_avg": 0.4,
+  "control_n": 0,
+  "control_exec_match_avg": null,
+  "cost_per_q_usd": 0.000315,
+  "latency_avg_s": 1.194,
+  "latency_p50_s": 1.035,
+  "sql_errors": 35,
+  "dataset": "oracle (local)"
+ },
+ "run-b-notes-only": {
+  "run_name": "oracle-run-b-notes-only",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "exec_match_avg": 0.85,
+  "control_n": 0,
+  "control_exec_match_avg": null,
+  "cost_per_q_usd": 0.000337,
+  "latency_avg_s": 1.305,
+  "latency_p50_s": 1.136,
+  "sql_errors": 0,
+  "dataset": "oracle (local)"
+ },
+ "run-b": {
+  "run_name": "oracle-run-b",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "exec_match_avg": 0.9,
+  "control_n": 0,
+  "control_exec_match_avg": null,
+  "cost_per_q_usd": 0.000367,
+  "latency_avg_s": 1.348,
+  "latency_p50_s": 1.108,
+  "sql_errors": 0,
+  "dataset": "oracle (local)"
+ },
+ "run-c": {
+  "run_name": "oracle-run-c",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "exec_match_avg": 0.3833,
+  "control_n": 0,
+  "control_exec_match_avg": null,
+  "cost_per_q_usd": 0.000345,
+  "latency_avg_s": 1.367,
+  "latency_p50_s": 1.224,
+  "sql_errors": 35,
+  "dataset": "oracle (local)"
+ }
+}

@@ -1,0 +1,8 @@
+2026-11-10 05:49:08,344 - all.application - INFO - Namespace astronomy-shop already exists.
+== Environment Variable Shadowing Mitigation Evaluation ==
+FRONTEND_OK
+[PASS] Environment shadowing is removed and frontend traffic works
+[timeline] {"ts_utc": "2026-11-10 04:49:12", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": true}}
+{
+  "success": true
+}

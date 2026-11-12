@@ -1,0 +1,60 @@
+{
+  "verdict": "needs_improvement",
+  "summary": "The independent replay recovered overall quality and met cost, latency, fingerprint, and anti-gaming requirements, but it failed the zero-tolerance control criterion: q837 regressed, producing control_exec_match_avg 0.9500. C4 also fails literally because the required untracked .nerve-review/ artifact appears outside workspace/.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Commands: run_experiment(run_name='verifier-rvl-87f3dbe9-iter1', workspace_dir='$HOME/nerve-v3-loops/run-b/workspace'); get_run_scores(run_name='verifier-rvl-87f3dbe9-iter1'). Output: experiment_id='fb7d88b725a9871f'; run_scores.exec_match_avg=0.9 and recomputed_from_item_scores.exec_match_avg=0.9, exceeding threshold 0.8110.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "Commands: get_run_scores('verifier-rvl-87f3dbe9-iter1') and get_run_scores('baseline'). Output: verifier control_exec_match_avg=0.95 in both run_scores and recomputed values, below required 1.0000. Control item q837 scored 0 in the verifier run and 1 in baseline; all other verifier control items scored 1.",
+      "fix_hint": "Adjust only generic workspace guidance so q837 retains baseline behavior, then rerun all 60 items and require 20/20 control passes."
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "Command: get_run_scores('verifier-rvl-87f3dbe9-iter1'). Output: cost_per_q_usd=0.000330, ratio to frozen baseline 0.000302 is 1.0927x (limit 1.2x); latency_p50_s=0.991385, ratio to 0.990 is 1.0014x (limit 1.5x).",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "unmet",
+      "evidence": "Command: git diff --stat 71d6c39..HEAD. Output: 'workspace/prompt.md | 1 +' and 'workspace/schema_notes.md | 15 ++++++++++++++-'. Command: git status --porcelain. Output: '?? .nerve-review/', which is outside workspace/. Command: agent_fingerprint({}). Output combined='5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1'. Inspection via git diff --unified=80 71d6c39..HEAD showed only generic prompt guidance, four schema rename mappings, and generic casing guidance; it contained no dataset question text, item IDs, expected SQL, or per-question answers.",
+      "fix_hint": "Arrange for the required .nerve-review/ loop artifact not to appear in repository status while retaining only workspace/ implementation changes."
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "This leg created run 'verifier-rvl-87f3dbe9-iter1' with run_experiment and independently read it back using get_run_scores. The returned experiment_id was 'fb7d88b725a9871f'; the verdict uses that run's stored and recomputed scores.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "One control item regressed",
+      "body": "The verifier replay scored only 19/20 control items. q837 scored 0 after scoring 1 in baseline, violating C2's explicit zero-tolerance requirement.",
+      "priority": 1,
+      "location": "workspace/prompt.md:1",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "Repository status contains an out-of-scope path",
+      "body": "git status --porcelain reports the untracked .nerve-review/ directory. Although it is a required loop artifact and not a committed implementation change, C4 literally requires every reported path to be under workspace/.",
+      "priority": 2,
+      "location": ".nerve-review/rvl-87f3dbe9/STATE.md:1",
+      "criterion_id": "C4"
+    }
+  ],
+  "proposed_criteria": [
+    {
+      "statement": "Explicitly exempt required .nerve-review/ loop artifacts from C4's git-status path check.",
+      "rationale": "The goal requires STATE.md under .nerve-review/, while C4 requires git status to show only workspace/ paths; without an exemption or preconfigured ignore, those requirements conflict.",
+      "severity": "advisory"
+    }
+  ],
+  "gamed": false
+}

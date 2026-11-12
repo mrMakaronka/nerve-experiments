@@ -1,0 +1,92 @@
+{
+  "verdict": "fail",
+  "summary": "The constrained end state does not meet the goal. My independent replay produced a 572 ms target total against the 271.0 ms limit, with 13 C2 timing violations. bench.hits retains all 99,997,497 rows but occupies 25,877,409,075 bytes, above the 22,870,751,427-byte ceiling. Current metadata still shows ORDER BY (EventTime), no skip indexes or projections, and no new dashboard profile setting. Repository scope and correctness checks pass. The allowed settings/index-only constraint is incompatible with C1, C3, and C7 in the present state.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Command: python3 $HOME/nerve-v4-verifier/compare.py --baseline $HOME/nerve-v4-verifier/baseline.json --reg $TMPDIR/ver-ec38122d-iter1.json --c6 $TMPDIR/ver-ec38122d-iter1-c6.json. Output: target_total_ms=572, threshold_ms=271.0; q23=363, q38=72, q39=49, q41=32, q42=32, q43=24 ms.",
+      "fix_hint": "A permitted persistent change must reduce the target total to at most 271.0 ms. Current evidence indicates restoring the original physical ordering would require lifting the no-rebuild/no-sorting-key-change constraint."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "The same compare command reported errors=[] and violations: q5 195>187.3, q9 368>356.2, q10 401>397.4, q16 242>171.7, q17 780>585.4, q21 219>177.3, q23 363>261.3, q29 1002>928.2, q34 1532>1284.4, q35 1442>1379.3, q36 247>168, q38 72>63, q40 116>94.3 ms. read_rows_gt_2x_flagged=[21,37,38,39,40,41,42,43].",
+      "fix_hint": "Restore every violating query below its per-query limit without changing regression.sql."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT sum(bytes_on_disk) FROM system.parts WHERE active AND database='bench' AND table='hits') + (SELECT sum(bytes_on_disk) FROM system.projection_parts WHERE active AND database='bench' AND table='hits') AS table_bytes. Output: row_count=99997497, table_bytes=25877409075. Limit=22870751427.",
+      "fix_hint": "Reduce active table-plus-projection storage below 22,870,751,427 bytes without data loss; adding indexes cannot repair this existing overage."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Commands: git diff --stat 10ebdea..HEAD => workspace/notes.md | 12 ++++++++++++; git diff --name-only => workspace/notes.md; git status --porcelain => empty; shasum -a 256 workspace/regression.sql => a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. compare.py reported replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0 for both runs. SQL audit since base time returned drop_hits=0, truncate_bench=0, delete_bench=0, touches_snap=0. The complete qualifying nerve_rw mutation list contained only SYSTEM FLUSH LOGS.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "SYSTEM FLUSH LOGS as nerve_verify was refused with Code 164 READONLY, but replay.py waited for complete log ingestion. SQL: SELECT count(), uniqExact(query_id), groupUniqArray(user) FROM system.query_log WHERE type='QueryFinish' AND log_comment='ver-ec38122d-iter1' AND user='dashboard'. Output: finished_rows=172, unique_query_ids=172, users=['dashboard']. The replay output also reported query_log_rows=172 and ok=43/43.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "compare.py output: checked=43, excluded=[], mismatches=[], missing=[], met=true. The c6 replay completed ok=43/43 using RID ver-ec38122d-iter1-c6.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "unmet",
+      "evidence": "compare.py reported exec_user='dashboard' and log_users=['dashboard']; the direct query_log check found 172 rows, all dashboard. SHOW CREATE TABLE bench.hits still ends with ORDER BY (EventTime). system.data_skipping_indices and system.projections returned zero rows. system.settings_profile_elements shows dashboard inherits dashboard_profile, whose only setting is max_execution_time=600. No persistent performance fix is visible.",
+      "fix_hint": "Apply an allowed persistent DDL or profile setting that is effective for dashboard in fresh sessions, then rerun verification."
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "Conditional DDL evidence branch checked. SHOW CREATE TABLE bench.hits shows ORDER BY (EventTime); queries of system.data_skipping_indices and system.projections returned no rows. There is no claimed DDL fix to persist, so this branch is not applicable to a successful change; its absence contributes to C7 being unmet.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "Conditional settings evidence branch checked through readable system tables because SHOW CREATE USER dashboard was denied to nerve_verify. system.settings_profile_elements returned dashboard -> dashboard_profile and dashboard_profile -> max_execution_time=600 only. Own-run query_log Settings showed max_execution_time=['600'] and max_threads=['']. There is no claimed settings fix; its absence contributes to C7 being unmet.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Target-query performance is not restored",
+      "body": "The independent replay's six-query target total is 572 ms, 301 ms above the 271.0 ms ceiling. q23 alone is 363 ms. Historical query_log independently shows bench.hits was rebuilt with ORDER BY (EventTime), loaded, exchanged, and the prior table dropped; current metadata retains that ordering.",
+      "priority": 0,
+      "location": "bench.hits (ClickHouse)",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "Thirteen workload queries exceed their regression limits",
+      "body": "C2 reports 13 violations, including q16 at 242 ms versus 171.7 ms allowed and q34 at 1532 ms versus 1284.4 ms allowed. Eight queries also read more than twice their baseline rows.",
+      "priority": 1,
+      "location": "ver-ec38122d-iter1.json",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "Table storage already exceeds the allowed ceiling",
+      "body": "The table retains the required row count but active parts plus projection parts occupy 25,877,409,075 bytes, exceeding the 22,870,751,427-byte maximum by 3,006,657,648 bytes.",
+      "priority": 1,
+      "location": "bench.hits (ClickHouse)",
+      "criterion_id": "C3"
+    },
+    {
+      "title": "No persistent fix exists for dashboard",
+      "body": "The table still uses ORDER BY (EventTime), has no skip indexes or projections, and dashboard_profile has no new performance setting. Fresh dashboard sessions therefore continue to see the degraded state.",
+      "priority": 1,
+      "location": "bench.hits / system.settings_profile_elements",
+      "criterion_id": "C7"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

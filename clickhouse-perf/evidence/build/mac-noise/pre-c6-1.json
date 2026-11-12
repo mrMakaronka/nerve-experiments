@@ -1,0 +1,930 @@
+{
+ "run_id": "pre-c6-1",
+ "set": "c6",
+ "repeat": 1,
+ "exec_user": "dashboard",
+ "read_user": "v4admin",
+ "replay_py_sha256": "2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0",
+ "queries_dir": "~/Research/nerve-experiments/demo/clickhouse-perf/queries",
+ "server_version": "26.8.36.3",
+ "merge_wait": {
+  "waited_s": 0.0,
+  "timeout_hit": false
+ },
+ "started_utc": "2026-11-11T12:34:02Z",
+ "ended_utc": "2026-11-11T12:34:33Z",
+ "query_log_rows": 43,
+ "totals": {
+  "queries": 43,
+  "ok": 43,
+  "errors": 0,
+  "total_median_ms": 31041,
+  "p95_median_ms": 3073,
+  "total_read_rows": 2936720573
+ },
+ "queries": [
+  {
+   "n": 1,
+   "sql_sha256": "9427a481e342c1da",
+   "error": null,
+   "result_hash": "6e2ee6c5544292f7",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 0,
+     "read_rows": 1,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 0,
+   "read_rows": 1,
+   "read_bytes": 16,
+   "memory_usage": 5355307,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 2,
+   "sql_sha256": "0bae986eb7e395a5",
+   "error": null,
+   "result_hash": "3661687bae7441a0",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 0,
+     "read_rows": 1,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 0,
+   "read_rows": 1,
+   "read_bytes": 16,
+   "memory_usage": 5354803,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 3,
+   "sql_sha256": "8839953813151c0b",
+   "error": null,
+   "result_hash": "f2c31f0e2646ed0d",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 26,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 26,
+   "read_rows": 99997497,
+   "read_bytes": 203148644,
+   "memory_usage": 5580475,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 4,
+   "sql_sha256": "bd9ab7a09153afaa",
+   "error": null,
+   "result_hash": "1f5d5033b56bbd9f",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 49,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 49,
+   "read_rows": 99997497,
+   "read_bytes": 799979976,
+   "memory_usage": 5554827,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 5,
+   "sql_sha256": "8ebb700400efe6ab",
+   "error": null,
+   "result_hash": "53942034fb6f55ab",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 451,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 451,
+   "read_rows": 99997497,
+   "read_bytes": 799979976,
+   "memory_usage": 1194097687,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 6,
+   "sql_sha256": "fca8498cf063ef5e",
+   "error": null,
+   "result_hash": "81960563d50ea463",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 318,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 318,
+   "read_rows": 99997497,
+   "read_bytes": 1034808952,
+   "memory_usage": 1040600318,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 7,
+   "sql_sha256": "08f216fc8d03ab96",
+   "error": null,
+   "result_hash": "d7a71da7e1d6e353",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 10,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 10,
+   "read_rows": 99997497,
+   "read_bytes": 199994994,
+   "memory_usage": 5596867,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 8,
+   "sql_sha256": "6758450516e9a541",
+   "error": null,
+   "result_hash": "cdf76e2d648d8d1f",
+   "result_rows": 18,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 7,
+     "read_rows": 65458090,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 7,
+   "read_rows": 65458090,
+   "read_bytes": 3154408,
+   "memory_usage": 7165927,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 9,
+   "sql_sha256": "5fb0fbbc673d067c",
+   "error": null,
+   "result_hash": "e2e4777561da658f",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 292,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 292,
+   "read_rows": 99997497,
+   "read_bytes": 1199969964,
+   "memory_usage": 728731431,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 10,
+   "sql_sha256": "6dce6f049ddb2554",
+   "error": null,
+   "result_hash": "9b2cfe5b0c4cd395",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 344,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 344,
+   "read_rows": 99997497,
+   "read_bytes": 1403115017,
+   "memory_usage": 760627783,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 11,
+   "sql_sha256": "c15f3f918d976d1e",
+   "error": null,
+   "result_hash": "8958a8dc2f76b782",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 57,
+     "read_rows": 99940153,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 57,
+   "read_rows": 99940153,
+   "read_bytes": 853566218,
+   "memory_usage": 86663831,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 12,
+   "sql_sha256": "f129f624088a8fb8",
+   "error": null,
+   "result_hash": "9258887379845128",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 73,
+     "read_rows": 99940153,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 73,
+   "read_rows": 99940153,
+   "read_bytes": 1053184723,
+   "memory_usage": 62748493,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 13,
+   "sql_sha256": "f0ca59cfffe0b05b",
+   "error": null,
+   "result_hash": "1a289fd7259a6bc5",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 219,
+     "read_rows": 99579705,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 219,
+   "read_rows": 99579705,
+   "read_bytes": 1036207833,
+   "memory_usage": 1031722920,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 14,
+   "sql_sha256": "90a16e1728407533",
+   "error": null,
+   "result_hash": "1c4ca3b7bc39447c",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 357,
+     "read_rows": 99334474,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 357,
+   "read_rows": 99334474,
+   "read_bytes": 1821466903,
+   "memory_usage": 1570730692,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 15,
+   "sql_sha256": "6771de4715c9324f",
+   "error": null,
+   "result_hash": "6c06c88100649e79",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 243,
+     "read_rows": 99334474,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 243,
+   "read_rows": 99334474,
+   "read_bytes": 1228509526,
+   "memory_usage": 1249736975,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 16,
+   "sql_sha256": "71b7f007352f0fbf",
+   "error": null,
+   "result_hash": "97f6e08daeb590c8",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 142,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 142,
+   "read_rows": 99997497,
+   "read_bytes": 799979976,
+   "memory_usage": 667100175,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 17,
+   "sql_sha256": "8d0e81f66e100d0c",
+   "error": null,
+   "result_hash": "da271fa92bf87fae",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 760,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 760,
+   "read_rows": 99997497,
+   "read_bytes": 1832508434,
+   "memory_usage": 2683604887,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 18,
+   "sql_sha256": "94d8e8bdc51708a7",
+   "error": null,
+   "result_hash": "8bdef7ebbd100745",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 185,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 185,
+   "read_rows": 99997497,
+   "read_bytes": 1832508434,
+   "memory_usage": 44986436,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 19,
+   "sql_sha256": "1cc567be62f5a4ba",
+   "error": null,
+   "result_hash": "72869717aa6bc094",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 1787,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 1787,
+   "read_rows": 99997497,
+   "read_bytes": 2230223306,
+   "memory_usage": 4856285757,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 20,
+   "sql_sha256": "92b71f998052ddb0",
+   "error": null,
+   "result_hash": "6e42b0c8ba82e3b5",
+   "result_rows": 4,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 13,
+     "read_rows": 73222,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 13,
+   "read_rows": 73222,
+   "read_bytes": 585776,
+   "memory_usage": 4779723,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 21,
+   "sql_sha256": "25375542cc4f63a5",
+   "error": null,
+   "result_hash": "aec4bda17d3eb5cb",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 557,
+     "read_rows": 26101744,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 557,
+   "read_rows": 26101744,
+   "read_bytes": 3985272145,
+   "memory_usage": 93393314,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 22,
+   "sql_sha256": "3fa2314e29701dbf",
+   "error": null,
+   "result_hash": "757a895aac99c528",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 53,
+     "read_rows": 4719769,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 53,
+   "read_rows": 4719769,
+   "read_bytes": 573038724,
+   "memory_usage": 52510117,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 23,
+   "sql_sha256": "f80e45a25f9788c7",
+   "error": null,
+   "result_hash": "13a7e97686182185",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 906,
+     "read_rows": 22835632,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 906,
+   "read_rows": 22835632,
+   "read_bytes": 4439027418,
+   "memory_usage": 79461898,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 24,
+   "sql_sha256": "97142d7f5db66dff",
+   "error": null,
+   "result_hash": "3a339b5c651df845",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 858,
+     "read_rows": 26085361,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 858,
+   "read_rows": 26085361,
+   "read_bytes": 895772611,
+   "memory_usage": 341430406,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 25,
+   "sql_sha256": "636d36e7e0b04a88",
+   "error": null,
+   "result_hash": "fd692c8f9b0c2e16",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 32,
+     "read_rows": 94913748,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 32,
+   "read_rows": 94913748,
+   "read_bytes": 398256583,
+   "memory_usage": 11620818,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 26,
+   "sql_sha256": "d87616d1044b87d4",
+   "error": null,
+   "result_hash": "c256425a6427fa62",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 103,
+     "read_rows": 99579705,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 103,
+   "read_rows": 99579705,
+   "read_bytes": 1036207833,
+   "memory_usage": 58569751,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 27,
+   "sql_sha256": "0fd67edc63f808d5",
+   "error": null,
+   "result_hash": "fd692c8f9b0c2e16",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 23,
+     "read_rows": 94905556,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 23,
+   "read_rows": 94905556,
+   "read_bytes": 398317579,
+   "memory_usage": 14158647,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 28,
+   "sql_sha256": "b8e986c2ca61de1a",
+   "error": null,
+   "result_hash": "65c516bcc0851a75",
+   "result_rows": 25,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 101,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 101,
+   "read_rows": 99997497,
+   "read_bytes": 1199969964,
+   "memory_usage": 6419201,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 29,
+   "sql_sha256": "f2c235e43bb54dd1",
+   "error": null,
+   "result_hash": "d39a874b90da7624",
+   "result_rows": 25,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 2255,
+     "read_rows": 99940153,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 2255,
+   "read_rows": 99940153,
+   "read_bytes": 6962461946,
+   "memory_usage": 2320465423,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 30,
+   "sql_sha256": "9d3eea6a62feec2c",
+   "error": null,
+   "result_hash": "a8c5ac97d6babbf2",
+   "result_rows": 1,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 77,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 77,
+   "read_rows": 99997497,
+   "read_bytes": 199994994,
+   "memory_usage": 7910507,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 31,
+   "sql_sha256": "ba1a0bb065e4f3c9",
+   "error": null,
+   "result_hash": "061a0d7969c10df4",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 510,
+     "read_rows": 99390075,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 510,
+   "read_rows": 99390075,
+   "read_bytes": 1789021350,
+   "memory_usage": 376502912,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 32,
+   "sql_sha256": "eb5554716c8f7ede",
+   "error": null,
+   "result_hash": "405fa03872cc6776",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 684,
+     "read_rows": 99390075,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 684,
+   "read_rows": 99390075,
+   "read_bytes": 2385361800,
+   "memory_usage": 686502614,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 33,
+   "sql_sha256": "322bc1cc44d77edc",
+   "error": null,
+   "result_hash": "9f29fc62d1738d08",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 3073,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 3073,
+   "read_rows": 99997497,
+   "read_bytes": 1599959952,
+   "memory_usage": 4524847250,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 34,
+   "sql_sha256": "a201908035ceeaa6",
+   "error": null,
+   "result_hash": "82531ec2fd148e12",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 10951,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 10951,
+   "read_rows": 99997497,
+   "read_bytes": 9343712463,
+   "memory_usage": 6368537397,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 35,
+   "sql_sha256": "b56b595bee22df82",
+   "error": null,
+   "result_hash": "ea457f42eb852341",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 5235,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 5235,
+   "read_rows": 99997497,
+   "read_bytes": 9343712463,
+   "memory_usage": 6426940808,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 36,
+   "sql_sha256": "a2427898843bdba3",
+   "error": null,
+   "result_hash": "c92f958d5f17d403",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 149,
+     "read_rows": 99997497,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 149,
+   "read_rows": 99997497,
+   "read_bytes": 399989988,
+   "memory_usage": 636638671,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 37,
+   "sql_sha256": "7afe5d211306b3c7",
+   "error": null,
+   "result_hash": "77955345919797b8",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 28,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 28,
+   "read_rows": 748719,
+   "read_bytes": 79879016,
+   "memory_usage": 110488652,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 38,
+   "sql_sha256": "15019f6fc1555523",
+   "error": null,
+   "result_hash": "2d3d7cc43475377d",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 14,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 14,
+   "read_rows": 748719,
+   "read_bytes": 51996505,
+   "memory_usage": 18331862,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 39,
+   "sql_sha256": "98a776c433566bf6",
+   "error": null,
+   "result_hash": "27f69f27572bfe6b",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 14,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 14,
+   "read_rows": 748719,
+   "read_bytes": 77540815,
+   "memory_usage": 29707655,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 40,
+   "sql_sha256": "1ec9e161acf2e522",
+   "error": null,
+   "result_hash": "23240ca266f31118",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 58,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 58,
+   "read_rows": 748719,
+   "read_bytes": 144405134,
+   "memory_usage": 262443431,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 41,
+   "sql_sha256": "c72fe54d9296494c",
+   "error": null,
+   "result_hash": "f74a28acbe62aff8",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 12,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 12,
+   "read_rows": 748719,
+   "read_bytes": 19466694,
+   "memory_usage": 9060336,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 42,
+   "sql_sha256": "62d6e13813f7bcc4",
+   "error": null,
+   "result_hash": "2fa342fe7f1aa3a1",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 9,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 9,
+   "read_rows": 748719,
+   "read_bytes": 16471818,
+   "memory_usage": 6033559,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  },
+  {
+   "n": 43,
+   "sql_sha256": "5b0ea89512f31059",
+   "error": null,
+   "result_hash": "f9a75244df2a999c",
+   "result_rows": 10,
+   "hash_stable_across_repeats": true,
+   "query_log_runs": [
+    {
+     "ms": 6,
+     "read_rows": 748719,
+     "type": "QueryFinish"
+    }
+   ],
+   "median_ms": 6,
+   "read_rows": 748719,
+   "read_bytes": 10482066,
+   "memory_usage": 6305931,
+   "log_user": "dashboard",
+   "log_settings": "{'database':'bench','log_comment':'pre-c6-1','max_execution_time':'600'}"
+  }
+ ]
+}

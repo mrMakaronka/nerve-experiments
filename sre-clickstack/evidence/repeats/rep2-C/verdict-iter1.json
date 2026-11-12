@@ -1,0 +1,61 @@
+{
+  "verdict": "fail",
+  "summary": "The restart-only mitigation did not recover astronomy-shop. Fresh verifier telemetry shows severe user-facing errors and latency, zero frontend-proxy traffic, and a CrashLoopBackOff pod. C4 and C5 pass, but C1-C3 are unmet.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Executed via mcp__clickhouse__run_query:\nWITH\n  toDateTime64('2026-11-10 05:05:18', 9, 'UTC') AS t_inj,\n  t_inj - INTERVAL 15 MINUTE AS b_start,\n  t_inj AS b_end,\n  toDateTime64('2026-11-10 05:05:52', 9, 'UTC') AS t_mit,\n  greatest(now64(9) - INTERVAL 5 MINUTE, t_mit) AS w_start,\n  now64(9) AS w_end\nSELECT\n  b_start, b_end, w_start, w_end,\n  dateDiff('second', w_start, w_end) AS w_seconds,\n  countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= b_start AND Timestamp < b_end) AS b_lg_spans,\n  round(100.0 * countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND StatusCode = 'Error' AND Timestamp >= b_start AND Timestamp < b_end) / greatest(b_lg_spans, 1), 2) AS b_error_pct,\n  countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= w_start AND Timestamp < w_end) AS w_lg_spans,\n  round(100.0 * countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND StatusCode = 'Error' AND Timestamp >= w_start AND Timestamp < w_end) / greatest(w_lg_spans, 1), 2) AS w_error_pct,\n  countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server' AND Timestamp >= b_start AND Timestamp < b_end) AS b_edge_spans,\n  round(b_edge_spans / 15.0, 2) AS b_edge_spans_per_min,\n  countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server' AND Timestamp >= w_start AND Timestamp < w_end) AS w_edge_spans,\n  round(w_edge_spans / (w_seconds / 60.0), 2) AS w_edge_spans_per_min,\n  round(quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= b_start AND Timestamp < b_end), 0) AS b_p95_ns,\n  round(quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client' AND Timestamp >= w_start AND Timestamp < w_end), 0) AS w_p95_ns\nFROM otel_traces\nWHERE Timestamp >= b_start AND Timestamp < w_end\nReturned row: b_start=2026-11-10 04:50:18, b_end=05:05:18, w_start=05:07:38.575401, w_end=05:12:38.575401, w_seconds=300, b_lg_spans=2114, b_error_pct=0.0, w_lg_spans=344, w_error_pct=90.41, b_edge_spans=2000, b_edge_spans_per_min=133.33, w_edge_spans=0, w_edge_spans_per_min=0.0. The allowed error rate was 1.00%; required edge volume was at least 93.33/min.",
+      "fix_hint": "A restart recreates the broken pod template. Recovery requires lifting the freeze and correcting or rolling back the frontend-proxy Deployment specification."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "The same verifier-executed SQL above returned b_p95_ns=20813585 and w_p95_ns=11228192093. The permitted maximum was 1.2 \u00d7 20813585 = 24976302 ns, so the post-fix p95 exceeds the limit by roughly 450\u00d7.",
+      "fix_hint": "Correct or roll back the broken frontend-proxy pod template, then verify another fresh window of at least 300 seconds."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods. Output excerpt: frontend-proxy-87c864665-x99pm  0/1  CrashLoopBackOff  6 (60s ago)  6m59s. JSONPath inspection returned ready=false, restarts=6, waiting=CrashLoopBackOff, last_reason=OOMKilled, last_finished=2026-11-10T05:11:49Z. That termination occurred after T_mit=05:05:52Z.",
+      "fix_hint": "Repair or roll back the frontend-proxy Deployment template; further restarts alone will reproduce the failure."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop rollout history deployment/frontend-proxy. Output includes revision 10. Command: kubectl ... get deployment frontend-proxy -o jsonpath=... returned generation=10 and restartedAt=2026-11-10T06:05:50+01:00. Independent Ruby comparison of kubectl get deployments -o json against helm -n astronomy-shop get manifest astronomy-shop returned SUMMARY live=29 helm=29 matched=29 mismatched=0; frontend-proxy matched ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "All C1/C2 numbers above came from the verifier's own mcp__clickhouse__run_query invocation in this leg. The exact SQL and returned row are included in C1, with the p95 fields interpreted in C2.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "User-facing availability did not recover",
+      "body": "The 300-second post-fix window has 90.41% synthetic-user errors and zero frontend-proxy server spans, versus a 0.00% error baseline and 133.33 edge spans/min.",
+      "priority": 0,
+      "location": "ClickStack:otel_traces",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "User-facing latency remains far above baseline",
+      "body": "Post-fix p95 is 11,228,192,093 ns; the permitted threshold is 24,976,302 ns.",
+      "priority": 0,
+      "location": "ClickStack:otel_traces",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "frontend-proxy remains unhealthy after mitigation",
+      "body": "The frontend-proxy pod is not Ready, is in CrashLoopBackOff, and has OOMKilled restarts after the mitigation timestamp.",
+      "priority": 0,
+      "location": "kubernetes/deployment/frontend-proxy",
+      "criterion_id": "C3"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

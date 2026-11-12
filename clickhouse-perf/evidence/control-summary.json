@@ -1,0 +1,37 @@
+{
+ "ctl-base": {
+  "total_ms": 502,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-run-b": {
+  "total_ms": 742,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-run-b-v2": {
+  "total_ms": 477,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-run-c": {
+  "total_ms": 1472,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-run-b-clean": {
+  "total_ms": 527,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-run-c-clean": {
+  "total_ms": 776,
+  "hashes_equal_to_base": true,
+  "n": 10
+ },
+ "ctl-after-10b": {
+  "total_ms": 773,
+  "hashes_equal_to_base": true,
+  "n": 10
+ }
+}

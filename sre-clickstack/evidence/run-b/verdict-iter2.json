@@ -1,0 +1,39 @@
+{
+  "verdict": "pass",
+  "summary": "All pinned criteria pass. My verifier-run ClickHouse query covered a full 300-second post-fix window and showed recovered errors, throughput, and latency. All astronomy-shop pods are Ready with zero restarts, both Kubernetes mitigations remain visible, and all 23 Deployment container images match Helm.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Executed through mcp__clickhouse__run_query:\nWITH\n  toDateTime64('2026-11-09 22:46:00', 9, 'UTC') AS b_start,\n  toDateTime64('2026-11-09 23:01:00', 9, 'UTC') AS b_end,\n  toDateTime64('2026-11-09 23:13:12', 9, 'UTC') AS t_mit,\n  now64(9, 'UTC') AS w_end,\n  greatest(w_end - INTERVAL 5 MINUTE, t_mit) AS w_start\nSELECT win, from_ts, to_ts, secs, lg_n, lg_err, lg_err_pct, lg_p95_ns, fp_n, fp_per_min\nFROM (\n SELECT 'B' AS win, toString(b_start) AS from_ts, toString(b_end) AS to_ts, dateDiff('second', b_start, b_end) AS secs, countIf(ServiceName='load-generator' AND SpanKind='Client') AS lg_n, countIf(ServiceName='load-generator' AND SpanKind='Client' AND StatusCode='Error') AS lg_err, round(100.0*lg_err/greatest(lg_n,1),3) AS lg_err_pct, toUInt64(quantileIf(0.95)(Duration, ServiceName='load-generator' AND SpanKind='Client')) AS lg_p95_ns, countIf(ServiceName='frontend-proxy' AND SpanKind='Server') AS fp_n, round(fp_n/(secs/60.0),3) AS fp_per_min FROM otel_traces WHERE Timestamp>=b_start AND Timestamp<b_end\n UNION ALL\n SELECT 'W', toString(w_start), toString(w_end), dateDiff('second',w_start,w_end), countIf(ServiceName='load-generator' AND SpanKind='Client'), countIf(ServiceName='load-generator' AND SpanKind='Client' AND StatusCode='Error'), round(100.0*countIf(ServiceName='load-generator' AND SpanKind='Client' AND StatusCode='Error')/greatest(countIf(ServiceName='load-generator' AND SpanKind='Client'),1),3), toUInt64(quantileIf(0.95)(Duration, ServiceName='load-generator' AND SpanKind='Client')), countIf(ServiceName='frontend-proxy' AND SpanKind='Server'), round(countIf(ServiceName='frontend-proxy' AND SpanKind='Server')/(dateDiff('second',w_start,w_end)/60.0),3) FROM otel_traces WHERE Timestamp>=w_start AND Timestamp<w_end\n) ORDER BY win\nReturned rows: B=[22:46:00,23:01:00,900s,lg_n=2148,lg_err=0,lg_err_pct=0.0,fp_n=2039,fp_per_min=135.933]; W=[23:35:42.682422250,23:40:42.682422250,300s,lg_n=688,lg_err=0,lg_err_pct=0.0,fp_n=671,fp_per_min=134.2]. Error 0.0% <= 1.0%; edge volume is 98.7% of baseline, above 70%.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "The same verifier-executed SQL above returned lg_p95_ns=22873178 for B and lg_p95_ns=19120396 for W. The limit is 1.2*22873178=27447813.6 ns; 19120396 ns is below it.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods -o wide. Every listed pod was fully Ready, Running, and RESTARTS=0; excerpts: accounting-f4df46fbf-np4pn 1/1 Running 0; frontend-proxy-579d54f6f5-pslvr 1/1 Running 0; load-generator-69fcd4cb96-lkkdb 2/2 Running 0; valkey-cart-859985f49d-ps7wf 1/1 Running 0. A second JSON query selected any not-Ready container, nonzero restart count, CrashLoopBackOff/Error/OOMKilled state, or termination after 2026-11-09T23:13:12Z; it returned no rows.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "kubectl rollout history deployment/frontend-proxy returned revisions 4 and 5. kubectl get deployment/frontend-proxy showed image ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy and exactly one FRONTEND_HOST entry with value frontend. Accounting rollout history returned revisions 1 and 2; kubectl get showed limits.memory=256Mi and its pinned accounting image. Image comparison command diffed sorted Deployment/container/image triples from `helm -n astronomy-shop get manifest astronomy-shop` against `kubectl --context kind-kind -n astronomy-shop get deployments -o json`. Output: LIVE_DEPLOYMENT_CONTAINER_IMAGES=23; HELM_DEPLOYMENT_CONTAINER_IMAGES=23; DIFF_RC=0.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "All C1/C2 values above came from the SELECT executed independently in this verifier leg using the available ClickHouse MCP read-only query tool, mcp__clickhouse__run_query. Its returned rows are reproduced in C1; no implementer-supplied telemetry number was used.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [],
+  "proposed_criteria": [],
+  "gamed": false
+}

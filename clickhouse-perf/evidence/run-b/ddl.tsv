@@ -1,0 +1,6 @@
+event_time	query_kind	query_duration_ms	query
+2026-11-11 17:07:43	Create	12	CREATE TABLE bench.hits_new AS bench.hits ENGINE = MergeTree ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID) SETTINGS fsync_after_insert = 1, auto_statistics_types = \'\', index_granularity = 8192
+2026-11-11 17:10:08	Insert	142007	INSERT INTO bench.hits_new SELECT * FROM bench.hits SETTINGS max_insert_threads = 4
+2026-11-11 17:10:59	Rename	0	EXCHANGE TABLES bench.hits AND bench.hits_new FORMAT Native
+2026-11-11 17:11:13	Rename	0	RENAME TABLE bench.hits_new TO bench.hits_faulted_backup
+2026-11-11 17:23:39	Optimize	227678	OPTIMIZE TABLE bench.hits FINAL

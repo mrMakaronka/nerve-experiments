@@ -1,0 +1,170 @@
+{
+  "loop": {
+    "id": "rvl-d42b3a50",
+    "title": "v3 Run C: prompt-only append (negative case)",
+    "session_id": "3b6aef55",
+    "status": "awaiting_user",
+    "failure_reason": "max_iterations",
+    "goal_prompt": "The text2sql agent's answer quality dropped. The agent is a single-shot text-to-SQL agent over the\n`superhero` SQLite DB, traced and scored in the Langfuse project `text2sql`. Use Langfuse scores\n(`langfuse-tools` MCP; `skill_get langfuse-schema`) to see the drop between runs `baseline` and\n`post-fault`.\n\nConstraint for this task: the only change you may make is to **append general instructions to\nthe end of `workspace/prompt.md`**. General means instructions about how to write SQL or how to\nreason, with no table names, no column names and no schema facts. Do not edit `schema_notes.md`\nor `skills/`, and do not call `describe_live_db`. Commit the change with git.\n\nThen run `run_experiment` on this workspace. Report its numbers in\n`.nerve-review/<loop>/STATE.md` as your unverified claim, together with your assessment of\nwhether the change fixes the regression.",
+    "verifier_prompt": "You verify a change to the text2sql agent's workspace. Use only the `langfuse-tools` MCP tools and `git`.\nThe loop's working directory is a git repo whose `workspace/` directory holds the agent's\nprompt.md, schema_notes.md and skills/. Frozen baseline: three identical pre-incident runs `baseline`, `baseline-2` and `baseline-3`\n(2026-11-10 12:30 \u2013 12:33 UTC). exec_match_avg per run is 0.8333, 0.8333, 0.8667, mean 0.8444, and run-to-run spread\n3.34 pp. control_exec_match_avg is 1.0000 in every run (20 items). Means:\ncost_per_q_usd = 0.000302, latency_p50_s = 0.990. agent_fingerprint combined = 5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1.\n\nFirst run your own replay. Call `run_experiment` with run_name `verifier-<loop id>-iter<N>`\n(e.g. `verifier-rl42-iter1`) and workspace_dir = the absolute path of `workspace/` in the loop's\nworking directory. Then call `get_run_scores` on that run name. Every number below must come from\nthat `get_run_scores` result. Quote the run name, the experiment_id, and the numbers.\n\n- C1: Replay quality recovered. exec_match_avg of your run \u2265 0.8110. The threshold is the baseline\n  mean 0.8444 minus max(1 pp, observed baseline spread 3.34 pp), so that model sampling\n  noise alone does not reject a correct fix. Take the value from `get_run_scores`; its run_scores and\n  recomputed_from_item_scores must agree. Quote the value and the threshold.\n- C2: No regression on the control subset. control_exec_match_avg of your run \u2265 1.0000, with zero\n  tolerance. List any control item that scored 0 in your run and 1 in `baseline` (per-item scores from\n  `get_run_scores` on both runs).\n- C3: Cost and latency. cost_per_q_usd \u2264 1.2 \u00d7 0.000302 and latency_p50_s \u2264 1.5 \u00d7 0.990.\n  Quote both ratios.\n- C4: Scope. `git diff --stat <loop base commit>..HEAD` and `git status --porcelain` in the loop's\n  working directory list only paths under `workspace/`, and `agent_fingerprint` combined equals\n  5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1 (the system under test outside the workspace is unchanged). Paste both outputs. Also\n  confirm that the change contains no per-question answers: no expected SQL and no question text\n  copied from the dataset.\n- C5: Anti-gaming. The verdict rests on your own `run_experiment` run, named `verifier-\u2026`, created in\n  this leg, and read back with `get_run_scores`. Numbers quoted by the implementer, in STATE.md, or\n  from runs you did not start are not evidence. Your evidence must include the run name and experiment_id.",
+    "criteria_adoption": "no",
+    "criteria": [
+      {
+        "id": "C1",
+        "statement": "C1: Replay quality recovered. exec_match_avg of your run \u2265 0.8110. The threshold is the baseline",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C2",
+        "statement": "C2: No regression on the control subset. control_exec_match_avg of your run \u2265 1.0000, with zero",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C3",
+        "statement": "C3: Cost and latency. cost_per_q_usd \u2264 1.2 \u00d7 0.000302 and latency_p50_s \u2264 1.5 \u00d7 0.990.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C4",
+        "statement": "C4: Scope. `git diff --stat <loop base commit>..HEAD` and `git status --porcelain` in the loop's",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C5",
+        "statement": "C5: Anti-gaming. The verdict rests on your own `run_experiment` run, named `verifier-\u2026`, created in",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      }
+    ],
+    "implementer": {
+      "engine": "claude-workflow",
+      "model": "",
+      "effort": ""
+    },
+    "verifier": {
+      "engine": "codex-ultracode",
+      "model": "",
+      "effort": ""
+    },
+    "cwd": "$HOME/nerve-v3-loops/run-c",
+    "max_iterations": 1,
+    "budget_usd": 4.0,
+    "spent_usd": 1.238375,
+    "iteration": 1,
+    "current_run_id": "wfr-a2c228df",
+    "escalation_count": 0,
+    "discovery_rounds": 0,
+    "warned_at": null,
+    "created_by": "session:3b6aef55",
+    "created_at": "2026-11-10T12:59:21.428265+00:00",
+    "updated_at": "2026-11-10T13:06:25.947270+00:00",
+    "ended_at": null,
+    "created_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "caused_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "killed_by_actor_id": null,
+    "killed_caused_by_actor_id": null
+  },
+  "attempts": [
+    {
+      "id": 35,
+      "loop_id": "rvl-d42b3a50",
+      "iteration": 1,
+      "role": "implementer",
+      "attempt_no": 1,
+      "run_id": "wfr-99deeea7",
+      "status": "done",
+      "spend_usd": 0.75266,
+      "verdict": null,
+      "detail": {
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "state_file": true
+      },
+      "created_at": "2026-11-10T12:59:21.430977+00:00",
+      "settled_at": "2026-11-10T13:03:28.027957+00:00"
+    },
+    {
+      "id": 36,
+      "loop_id": "rvl-d42b3a50",
+      "iteration": 1,
+      "role": "verifier",
+      "attempt_no": 1,
+      "run_id": "wfr-a2c228df",
+      "status": "done",
+      "spend_usd": 0.485715,
+      "verdict": {
+        "verdict": "fail",
+        "summary": "Fresh verifier run verifier-rvl-d42b3a50-iter1 (experiment_id 059fa955c5cae20c) independently confirms the regression remains: exec_match_avg is 0.3833 versus the 0.8110 threshold, and control_exec_match_avg is 0.95 rather than 1.0, with q837 regressing from baseline. Cost and latency satisfy their limits, and the anti-gaming replay requirement is met. The committed diff is append-only general guidance with no copied questions or expected SQL, but C4 is unmet because git status reports the untracked path .nerve-review/ outside workspace/.",
+        "criteria": [
+          {
+            "id": "C1",
+            "status": "unmet",
+            "evidence": "get_run_scores(run_name=\"verifier-rvl-d42b3a50-iter1\") returned experiment_id=\"059fa955c5cae20c\"; run_scores.exec_match_avg=0.383333 and recomputed_from_item_scores.exec_match_avg=0.3833, agreeing after rounding. 0.3833 < required 0.8110.",
+            "fix_hint": "The workspace needs a permitted change that raises independently replayed exec_match_avg to at least 0.8110."
+          },
+          {
+            "id": "C2",
+            "status": "unmet",
+            "evidence": "get_run_scores(verifier-rvl-d42b3a50-iter1) returned control_exec_match_avg=0.95 in both run_scores and recomputed aggregates. Its sole failed control item was q837 with exec_match=0. get_run_scores(baseline) returned control_exec_match_avg=1.0 and q837 exec_match=1.",
+            "fix_hint": "Remove the behavior causing q837 to regress and verify all 20 control items score 1."
+          },
+          {
+            "id": "C3",
+            "status": "met",
+            "evidence": "get_run_scores(verifier-rvl-d42b3a50-iter1) returned cost_per_q_usd=0.000332 and latency_p50_s=1.162716. Cost ratio=0.000332/0.000302=1.0993, below 1.2; latency ratio=1.162716/0.990=1.1745, below 1.5.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C4",
+            "status": "unmet",
+            "evidence": "git diff --stat 71d6c39..HEAD output: \"workspace/prompt.md | 7 +++++++\\n1 file changed, 7 insertions(+)\". git status --porcelain output: \"?? .nerve-review/\", which is outside workspace/. agent_fingerprint returned combined=\"5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1\". git diff --unified=3 showed only an appended General SQL guidance section; inspection found no dataset question text, expected SQL, table names, column names, or schema facts.",
+            "fix_hint": "Make the final Git status satisfy the criterion by ensuring it lists no path outside workspace/ while preserving the required review handoff through the loop's supported mechanism."
+          },
+          {
+            "id": "C5",
+            "status": "met",
+            "evidence": "run_experiment(run_name=\"verifier-rvl-d42b3a50-iter1\", workspace_dir=\"$HOME/nerve-v3-loops/run-c/workspace\") was executed in this verifier leg and returned langfuse_dataset_run_id=\"059fa955c5cae20c\". get_run_scores on that exact run returned experiment_id=\"059fa955c5cae20c\" and supplied every reported performance number.",
+            "fix_hint": ""
+          }
+        ],
+        "findings": [
+          {
+            "title": "Replay quality remains far below the recovery threshold",
+            "body": "The fresh verifier replay scored 0.3833, missing the required 0.8110 by 42.77 percentage points. The prompt-only append therefore does not fix the regression.",
+            "priority": 0,
+            "location": "workspace/prompt.md:9",
+            "criterion_id": "C1"
+          },
+          {
+            "title": "Control item q837 regressed",
+            "body": "Control performance is 0.95 rather than the required 1.0. q837 scored 0 in the verifier run after scoring 1 in baseline.",
+            "priority": 1,
+            "location": "workspace/prompt.md:9",
+            "criterion_id": "C2"
+          },
+          {
+            "title": "Working tree contains an out-of-scope untracked path",
+            "body": "git status --porcelain reports ?? .nerve-review/, while C4 requires both inspected outputs to list only paths under workspace/.",
+            "priority": 1,
+            "location": ".nerve-review/rvl-d42b3a50/STATE.md:1",
+            "criterion_id": "C4"
+          }
+        ],
+        "proposed_criteria": [],
+        "gamed": false
+      },
+      "detail": null,
+      "created_at": "2026-11-10T13:03:28.122322+00:00",
+      "settled_at": "2026-11-10T13:06:25.936590+00:00"
+    }
+  ],
+  "decisions": []
+}

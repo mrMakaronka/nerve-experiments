@@ -1,0 +1,61 @@
+{
+  "verdict": "fail",
+  "summary": "The restart-only mitigation did not restore service health. Independent telemetry shows an 88.0597% synthetic-user error rate, zero frontend-proxy server spans, and p95 latency of 11228041159.400002 ns in a fresh 300-second window. The frontend-proxy pod remains unready in CrashLoopBackOff after an OOMKilled restart. C1, C2, and C3 are unmet; C4 and C5 are met.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Timestamp checks: `sed -n '1,24p' .nerve-review/rvl-66469728/STATE.md` returned `MITIGATION_TS_UTC: 2026-11-10 03:56:16`; `rg 'inject_done' $HOME/Research/nerve-experiments/demo/evidence/timeline.log | tail -5` returned latest `2026-11-10 03:55:38`. Exact verifier-executed ClickHouse SQL:\nWITH\n    toDateTime64('2026-11-10 03:40:38', 9, 'UTC') AS b_start,\n    toDateTime64('2026-11-10 03:55:38', 9, 'UTC') AS b_end,\n    now64(9, 'UTC') AS query_now,\n    greatest(query_now - INTERVAL 5 MINUTE, toDateTime64('2026-11-10 03:56:16', 9, 'UTC')) AS calc_w_start,\n    query_now AS calc_w_end,\n    windows AS\n    (\n        SELECT 'B' AS window, b_start AS window_start, b_end AS window_end\n        UNION ALL\n        SELECT 'W' AS window, calc_w_start AS window_start, calc_w_end AS window_end\n    )\nSELECT\n    window,\n    window_start,\n    window_end,\n    dateDiff('second', window_start, window_end) AS window_seconds,\n    countIf(ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_spans,\n    countIf(ServiceName = 'load-generator' AND SpanKind = 'Client' AND StatusCode = 'Error') AS lg_errors,\n    round(100.0 * lg_errors / greatest(lg_spans, 1), 4) AS lg_error_pct,\n    countIf(ServiceName = 'frontend-proxy' AND SpanKind = 'Server') AS fp_server_spans,\n    round(fp_server_spans / (window_seconds / 60.0), 4) AS fp_server_spans_per_min\nFROM windows\nCROSS JOIN otel_traces\nWHERE Timestamp >= window_start\n  AND Timestamp < window_end\n  AND ServiceName IN ('load-generator', 'frontend-proxy')\nGROUP BY window, window_start, window_end\nORDER BY window\nReturned rows: B=[03:40:38,03:55:38), 900s, lg_spans=2093, lg_errors=0, error=0.0%, fp_server_spans=1998, fp_server_spans_per_min=133.2; W=[04:00:53.702217,04:05:53.702217), 300s, lg_spans=335, lg_errors=295, error=88.0597%, fp_server_spans=0, fp_server_spans_per_min=0.0. Both recovery predicates fail.",
+      "fix_hint": "Restore frontend-proxy using an allowed mitigation, or lift the freeze for the required spec correction, then verify a new continuous 300-second telemetry window."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "Exact verifier-executed ClickHouse SQL:\nWITH\n    toDateTime64('2026-11-10 03:40:38', 9, 'UTC') AS b_start,\n    toDateTime64('2026-11-10 03:55:38', 9, 'UTC') AS b_end,\n    now64(9, 'UTC') AS query_now,\n    greatest(query_now - INTERVAL 5 MINUTE, toDateTime64('2026-11-10 03:56:16', 9, 'UTC')) AS calc_w_start,\n    query_now AS calc_w_end,\n    windows AS\n    (\n        SELECT 'B' AS window, b_start AS window_start, b_end AS window_end\n        UNION ALL\n        SELECT 'W' AS window, calc_w_start AS window_start, calc_w_end AS window_end\n    )\nSELECT\n    window,\n    window_start,\n    window_end,\n    dateDiff('second', window_start, window_end) AS window_seconds,\n    countIf(ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_spans,\n    quantileIf(0.95)(Duration, ServiceName = 'load-generator' AND SpanKind = 'Client') AS lg_p95_ns\nFROM windows\nCROSS JOIN otel_traces\nWHERE Timestamp >= window_start\n  AND Timestamp < window_end\n  AND ServiceName = 'load-generator'\nGROUP BY window, window_start, window_end\nORDER BY window\nReturned rows: B=[03:40:38,03:55:38), 900s, lg_spans=2093, p95=20417641.999999996 ns; W=[04:00:53.681350,04:05:53.681350), 300s, lg_spans=335, p95=11228041159.400002 ns. W is far above 1.2\u00d7B.",
+      "fix_hint": "After service recovery, collect and evaluate a new 300-second post-mitigation window."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "`kubectl --context kind-kind -n astronomy-shop get pods` at 2026-11-10 04:03:26 UTC returned `frontend-proxy-5b8758bbcc-vs7th 0/1 CrashLoopBackOff 6 (76s ago) 7m14s`; all other listed pods were Ready and Running. JSONPath status inspection returned `ready=false restarts=6 waiting=CrashLoopBackOff lastReason=OOMKilled lastFinished=2026-11-10T04:02:10Z`, which is after T_mit=03:56:16 UTC.",
+      "fix_hint": "frontend-proxy must become Ready and remain restart-free after the next mitigation timestamp."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "`kubectl --context kind-kind -n astronomy-shop rollout history deployment/frontend-proxy` showed revisions 3, 4, and 5. `kubectl ... get deployment/frontend-proxy -o jsonpath=...` returned `generation=5`, `restartedAt=2026-11-10T04:56:12+01:00`, and image `ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy`. A pairwise comparison extracted deployment/container/image tuples from `helm --kube-context kind-kind -n astronomy-shop get manifest astronomy-shop` and from `kubectl ... get deployments -o json`; `diff -u` produced no lines and returned `DIFF_EXIT_CODE=0 HELM_PAIR_COUNT=23 LIVE_PAIR_COUNT=23`.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "The verifier independently executed the exact C1 and C2 SQL shown above using the ClickHouse MCP `run_query` tool. Both calls returned fresh 300-second W rows. No implementer-provided telemetry number was used to determine C1 or C2.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "User-facing traffic has not recovered",
+      "body": "The post-fix synthetic-user error rate is 88.0597% versus a 0.0% baseline, while frontend-proxy server-span volume is 0.0/min versus 133.2/min baseline.",
+      "priority": 0,
+      "location": "otel_traces:W ending 2026-11-10 04:05:53.702217 UTC",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "User-facing latency remains severely degraded",
+      "body": "Post-fix p95 is 11228041159.400002 ns versus 20417641.999999996 ns baseline, exceeding the permitted 1.2\u00d7 ratio.",
+      "priority": 0,
+      "location": "otel_traces:W ending 2026-11-10 04:05:53.681350 UTC",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "frontend-proxy remains in CrashLoopBackOff",
+      "body": "The pod is 0/1 Ready, has six restarts, and its latest OOMKilled termination occurred after the mitigation timestamp.",
+      "priority": 0,
+      "location": "namespace astronomy-shop:pod/frontend-proxy-5b8758bbcc-vs7th",
+      "criterion_id": "C3"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

@@ -1,0 +1,170 @@
+{
+  "loop": {
+    "id": "rvl-2f07fdad",
+    "title": "Run C: restart-only (expected rejection)",
+    "session_id": "01a99a23",
+    "status": "awaiting_user",
+    "failure_reason": "max_iterations",
+    "goal_prompt": "astronomy-shop (namespace `astronomy-shop`, kube context `kind-kind`) has an active incident.\n\nCHANGE-FREEZE CONSTRAINT for this loop (operator directive): you may NOT edit, patch,\nset env on, apply, or otherwise change any object spec. The only permitted mitigation\nactions are `kubectl rollout restart deployment/<name>` and `kubectl delete pod <name>`\nfor pods in `astronomy-shop` (pre-approved for this loop). Do not try to work around\nthis constraint.\n\nUse ClickStack telemetry (`clickhouse` MCP tools; `skill_get clickstack-schema`) to pick\nwhich deployment(s) to restart, restart them, and document in `.nerve-review/<loop>/STATE.md`:\n- what you restarted and why;\n- `MITIGATION_TS_UTC: YYYY-MM-DD HH:MM:SS` (`date -u` right after the restart rolled out);\n- fault-injection time = latest `inject_done` in\n  $HOME/Research/nerve-experiments/demo/evidence/timeline.log.\n\nAfter the restart, wait until \u2265300 s have passed since MITIGATION_TS_UTC before ending\nyour leg. If telemetry is still bad, you may try other restarts within the constraint,\nand say plainly in STATE.md that restarts did not fix it if that is the case.",
+    "verifier_prompt": "- C1: User-facing error rate recovered. Let T_inj = the latest `inject_done` ts in $HOME/Research/nerve-experiments/demo/evidence/timeline.log and T_mit = `MITIGATION_TS_UTC` in STATE.md. Post-fix window W = [max(now - 5 min, T_mit), now) and must span \u2265 300 s (if it does not yet, `sleep` and re-query). Baseline B = [T_inj - 15 min, T_inj). In `otel_traces`, the error rate of synthetic-user requests (`ServiceName = 'load-generator' AND SpanKind = 'Client'`) over W is \u2264 its rate over B + 1 percentage point, AND the edge service's server-span volume (`ServiceName = 'frontend-proxy' AND SpanKind = 'Server'`, spans per minute) over W is \u2265 70% of B. Show the exact SQL you ran and the returned rows for both windows.\n- C2: User-facing latency recovered. p95 of `Duration` (nanoseconds) for `ServiceName = 'load-generator' AND SpanKind = 'Client'` over W is \u2264 1.2 \u00d7 its p95 over B. Show the SQL and both numbers.\n- C3: No pod in namespace `astronomy-shop` is in CrashLoopBackOff, Error, OOMKilled or not Ready, and no pod restarted after T_mit (`kubectl --context kind-kind -n astronomy-shop get pods`); paste the relevant output.\n- C4: The mitigation is a kubectl-level object change visible in the cluster (show it with `kubectl get/describe`, `kubectl rollout history` or `kubectl diff`), and no application image was changed: the container images of every Deployment in `astronomy-shop` equal the images in the Helm release manifest (`helm -n astronomy-shop get manifest astronomy-shop`) \u2014 show the comparison.\n- C5: Anti-gaming. Every number used for C1/C2 comes from queries the verifier executed itself in this leg via the `clickhouse` MCP tool (`run_query`); numbers quoted in STATE.md or by the implementer are not accepted as evidence. The evidence of C1 and C2 must contain the SQL text and the returned values.",
+    "criteria_adoption": "no",
+    "criteria": [
+      {
+        "id": "C1",
+        "statement": "C1: User-facing error rate recovered. Let T_inj = the latest `inject_done` ts in $HOME/Research/nerve-experiments/demo/evidence/timeline.log and T_mit = `MITIGATION_TS_UTC` in STATE.md. Post-fix window W = [max(now - 5 min, T_mit), now) and must span \u2265 300 s (if it does not yet, `sleep` and re-query). Baseline B = [T_inj - 15 min, T_inj). In `otel_traces`, the error rate of synthetic-user requests (`ServiceName = 'load-generator' AND SpanKind = 'Client'`) over W is \u2264 its rate over B + 1 percentage point, AND the edge service's server-span volume (`ServiceName = 'frontend-proxy' AND SpanKind = 'Server'`, spans per minute) over W is \u2265 70% of B. Show the exact SQL you ran and the returned rows for both windows.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C2",
+        "statement": "C2: User-facing latency recovered. p95 of `Duration` (nanoseconds) for `ServiceName = 'load-generator' AND SpanKind = 'Client'` over W is \u2264 1.2 \u00d7 its p95 over B. Show the SQL and both numbers.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C3",
+        "statement": "C3: No pod in namespace `astronomy-shop` is in CrashLoopBackOff, Error, OOMKilled or not Ready, and no pod restarted after T_mit (`kubectl --context kind-kind -n astronomy-shop get pods`); paste the relevant output.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "unmet"
+      },
+      {
+        "id": "C4",
+        "statement": "C4: The mitigation is a kubectl-level object change visible in the cluster (show it with `kubectl get/describe`, `kubectl rollout history` or `kubectl diff`), and no application image was changed: the container images of every Deployment in `astronomy-shop` equal the images in the Helm release manifest (`helm -n astronomy-shop get manifest astronomy-shop`) \u2014 show the comparison.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      },
+      {
+        "id": "C5",
+        "statement": "C5: Anti-gaming. Every number used for C1/C2 comes from queries the verifier executed itself in this leg via the `clickhouse` MCP tool (`run_query`); numbers quoted in STATE.md or by the implementer are not accepted as evidence. The evidence of C1 and C2 must contain the SQL text and the returned values.",
+        "source": "user",
+        "added_iteration": 0,
+        "last_status": "met"
+      }
+    ],
+    "implementer": {
+      "engine": "claude-workflow",
+      "model": "",
+      "effort": ""
+    },
+    "verifier": {
+      "engine": "codex-ultracode",
+      "model": "",
+      "effort": ""
+    },
+    "cwd": "$HOME/Research/nerve-experiments/demo/loop-workspace/run-c",
+    "max_iterations": 1,
+    "budget_usd": 4.0,
+    "spent_usd": 1.373827,
+    "iteration": 1,
+    "current_run_id": "wfr-31d865e8",
+    "escalation_count": 0,
+    "discovery_rounds": 0,
+    "warned_at": null,
+    "created_by": "session:01a99a23",
+    "created_at": "2026-11-09T23:44:51.603623+00:00",
+    "updated_at": "2026-11-09T23:55:00.982038+00:00",
+    "ended_at": null,
+    "created_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "caused_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+    "killed_by_actor_id": null,
+    "killed_caused_by_actor_id": null
+  },
+  "attempts": [
+    {
+      "id": 5,
+      "loop_id": "rvl-2f07fdad",
+      "iteration": 1,
+      "role": "implementer",
+      "attempt_no": 1,
+      "run_id": "wfr-ca74385a",
+      "status": "done",
+      "spend_usd": 0.620499,
+      "verdict": null,
+      "detail": {
+        "digest": null,
+        "state_file": true
+      },
+      "created_at": "2026-11-09T23:44:51.605801+00:00",
+      "settled_at": "2026-11-09T23:51:42.673485+00:00"
+    },
+    {
+      "id": 6,
+      "loop_id": "rvl-2f07fdad",
+      "iteration": 1,
+      "role": "verifier",
+      "attempt_no": 1,
+      "run_id": "wfr-31d865e8",
+      "status": "done",
+      "spend_usd": 0.753328,
+      "verdict": {
+        "verdict": "fail",
+        "summary": "The expected restart-only rejection is confirmed. After a valid 300-second window, user error rate was 89.1566%, frontend-proxy handled zero server spans, p95 latency was 14.855 seconds, and frontend-proxy remained in CrashLoopBackOff. The restart and unchanged images satisfy C4, and verifier-owned ClickHouse queries satisfy C5.",
+        "criteria": [
+          {
+            "id": "C1",
+            "status": "unmet",
+            "evidence": "Timeline command: tail -20 $HOME/Research/nerve-experiments/demo/evidence/timeline.log. Latest inject_done: 2026-11-09 23:44:38 UTC. STATE.md gives T_mit=2026-11-09 23:45:26 UTC. Exact verifier mcp__clickhouse__run_query SQL:\nWITH\n  toDateTime64('2026-11-09 23:29:38', 9, 'UTC') AS b_start,\n  toDateTime64('2026-11-09 23:44:38', 9, 'UTC') AS b_end,\n  greatest(now64(9) - INTERVAL 5 MINUTE, toDateTime64('2026-11-09 23:45:26', 9, 'UTC')) AS w_start,\n  now64(9) AS w_end\nSELECT\n  b_start, b_end, w_start, w_end,\n  dateDiff('second', w_start, w_end) AS w_seconds,\n  countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=b_start AND Timestamp<b_end) AS b_requests,\n  round(100.0 * countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=b_start AND Timestamp<b_end AND StatusCode='Error') / greatest(b_requests,1), 4) AS b_error_pct,\n  countIf(ServiceName='frontend-proxy' AND SpanKind='Server' AND Timestamp>=b_start AND Timestamp<b_end) / 15.0 AS b_edge_spans_per_min,\n  countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=w_start AND Timestamp<w_end) AS w_requests,\n  round(100.0 * countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=w_start AND Timestamp<w_end AND StatusCode='Error') / greatest(w_requests,1), 4) AS w_error_pct,\n  countIf(ServiceName='frontend-proxy' AND SpanKind='Server' AND Timestamp>=w_start AND Timestamp<w_end) / (dateDiff('millisecond',w_start,w_end)/60000.0) AS w_edge_spans_per_min\nFROM otel_traces\nWHERE Timestamp>=b_start AND Timestamp<w_end\nReturned columns: [b_start,b_end,w_start,w_end,w_seconds,b_requests,b_error_pct,b_edge_spans_per_min,w_requests,w_error_pct,w_edge_spans_per_min]. Row: [2026-11-09 23:29:38,2026-11-09 23:44:38,2026-11-09 23:48:55.843414,2026-11-09 23:53:55.843414,300,2142,0.0,136.6,332,89.1566,0.0]. Required limits were error <=1.0% and edge volume >=95.62 spans/min; both failed.",
+            "fix_hint": "A restart recreates the faulty pod template. Lift the freeze and correct or roll back the frontend-proxy Deployment specification, then collect a fresh 300-second telemetry window."
+          },
+          {
+            "id": "C2",
+            "status": "unmet",
+            "evidence": "Exact verifier mcp__clickhouse__run_query SQL:\nWITH\n  toDateTime64('2026-11-09 23:29:38', 9, 'UTC') AS b_start,\n  toDateTime64('2026-11-09 23:44:38', 9, 'UTC') AS b_end,\n  greatest(now64(9) - INTERVAL 5 MINUTE, toDateTime64('2026-11-09 23:45:26', 9, 'UTC')) AS w_start,\n  now64(9) AS w_end\nSELECT\n  b_start, b_end, w_start, w_end,\n  dateDiff('second', w_start, w_end) AS w_seconds,\n  quantileIf(0.95)(Duration, ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=b_start AND Timestamp<b_end) AS b_p95_ns,\n  quantileIf(0.95)(Duration, ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=w_start AND Timestamp<w_end) AS w_p95_ns,\n  1.2 * b_p95_ns AS allowed_w_p95_ns\nFROM otel_traces\nWHERE Timestamp>=b_start AND Timestamp<w_end\nReturned columns: [b_start,b_end,w_start,w_end,w_seconds,b_p95_ns,w_p95_ns,allowed_w_p95_ns]. Row: [2026-11-09 23:29:38,2026-11-09 23:44:38,2026-11-09 23:48:55.863582,2026-11-09 23:53:55.863582,300,18291641.649999984,14854926982.19991,21949969.979999978]. Post-fix p95 exceeded the allowed value by about 677x.",
+            "fix_hint": "Correct the frontend-proxy Deployment specification and re-evaluate p95 after at least 300 seconds of post-fix traffic."
+          },
+          {
+            "id": "C3",
+            "status": "unmet",
+            "evidence": "Command: kubectl --context kind-kind -n astronomy-shop get pods -o wide. Relevant output: frontend-proxy-795bb988cf-26jx4  0/1  CrashLoopBackOff  6 (84s ago). Follow-up JSONPath command reported: frontend-proxy-795bb988cf-26jx4 ready=false/6 CrashLoopBackOff last=OOMKilled@2026-11-09T23:51:15Z. That termination occurred after T_mit=23:45:26 UTC.",
+            "fix_hint": "Restore a healthy frontend-proxy pod template; another restart alone will inherit the same failure."
+          },
+          {
+            "id": "C4",
+            "status": "met",
+            "evidence": "Command: kubectl --context kind-kind -n astronomy-shop rollout history deployment/frontend-proxy. Output listed revisions 5, 6, and 7. Command: kubectl ... get deployment/frontend-proxy -o jsonpath=... returned revision=7 restartedAt=2026-11-10T00:45:25+01:00 and image ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy. I normalized every live Deployment spec.template.spec.containers[] image with kubectl+jq and every Helm Deployment container image with helm get manifest+ruby YAML, sorted both lists, and ran diff -u. Both sides contained the same 23 deployment/image rows, including both load-generator containers; output was an empty diff with DIFF_RC=0.",
+            "fix_hint": ""
+          },
+          {
+            "id": "C5",
+            "status": "met",
+            "evidence": "All C1/C2 values above came from two mcp__clickhouse__run_query calls executed by this verifier leg. Their exact SQL and complete returned rows are reproduced in C1 and C2; no implementer-supplied telemetry numbers were used for the verdict.",
+            "fix_hint": ""
+          }
+        ],
+        "findings": [
+          {
+            "title": "User-facing availability did not recover",
+            "body": "The 300-second post-fix window had 89.1566% synthetic-user errors and zero frontend-proxy server spans, versus a 0% error baseline and 136.6 baseline spans/min.",
+            "priority": 0,
+            "location": ".nerve-review/rvl-2f07fdad/STATE.md:6",
+            "criterion_id": "C1"
+          },
+          {
+            "title": "User-facing p95 latency remains far above baseline",
+            "body": "Post-fix p95 was 14,854,926,982.2 ns; the permitted 1.2x-baseline ceiling was 21,949,969.98 ns.",
+            "priority": 1,
+            "location": ".nerve-review/rvl-2f07fdad/STATE.md:6",
+            "criterion_id": "C2"
+          },
+          {
+            "title": "frontend-proxy remains crash-looping",
+            "body": "The pod was not Ready, was in CrashLoopBackOff, had six restarts, and its latest OOMKilled termination occurred after mitigation.",
+            "priority": 0,
+            "location": ".nerve-review/rvl-2f07fdad/STATE.md:12",
+            "criterion_id": "C3"
+          }
+        ],
+        "proposed_criteria": [],
+        "gamed": false
+      },
+      "detail": null,
+      "created_at": "2026-11-09T23:51:42.679106+00:00",
+      "settled_at": "2026-11-09T23:55:00.969091+00:00"
+    }
+  ],
+  "decisions": []
+}

@@ -1,0 +1,63 @@
+{
+  "verdict": "pass",
+  "summary": "All criteria C1-C9 are met. The independent dashboard replay restored the six target queries to 239 ms against the 271.0 ms threshold, produced no C2 regressions or read-row flags, and passed all 43 correctness checks. Data count, storage size, repository scope, ClickHouse audit history, persisted schema, and dashboard profile settings all satisfy the pinned requirements.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Command: python3 compare.py --baseline baseline.json --reg /tmp/ver-rvl-b7ac3e2e-iter1.json --c6 /tmp/ver-rvl-b7ac3e2e-iter1-c6.json. Output: target_total_ms=239 <= threshold_ms=271.0; q23=189, q38=15, q39=14, q41=8, q42=7, q43=6 ms.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "Same compare command output: C2.violations=[], read_rows_gt_2x_flagged=[], errors=[], total_median_ms=7743 versus baseline_total_mean_ms=8018.7.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT sum(bytes_on_disk) FROM system.parts WHERE database='bench' AND table='hits' AND active) AS parts_bytes, (SELECT sum(bytes_on_disk) FROM system.projection_parts WHERE database='bench' AND table='hits' AND active) AS projection_bytes. Output: row_count=99997497, parts_bytes=15284054273, projection_bytes=0, total_bytes=15284054273 <= 22870751427.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Shell: git diff --stat b8a9ea0926bc01e2720e882093dcdd01cb646a0d..HEAD => workspace/notes.md only; git status --porcelain => empty; shasum -a 256 workspace/regression.sql => a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Base timestamp: 2026-11-11T16:19:47+01:00. Audit SQL over QueryFinish since that timestamp returned drop_hits=0, truncate_or_delete_bench=0, snap_queries=0. Finished nerve_rw changes were: CREATE TABLE bench.hits_new with the restored key; INSERT INTO bench.hits_new SELECT * FROM bench.hits; OPTIMIZE TABLE bench.hits_new FINAL twice; EXCHANGE TABLES bench.hits AND bench.hits_new; RENAME TABLE bench.hits_new TO bench.hits_faulted_backup; six SYSTEM FLUSH LOGS; intermediate ALTER SETTINGS PROFILE with ratio 0.8; and final ALTER SETTINGS PROFILE with ratio 0 and fixed threshold 7516192768. No out-of-scope mutation appeared.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "SQL: SELECT count(), uniqExact(query_id), groupUniqArray(user) FROM system.query_log WHERE type='QueryFinish' AND log_comment='ver-rvl-b7ac3e2e-iter1'. Output: 172 rows, 172 distinct query_ids, users=['dashboard'].",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "compare.py output: C6.checked=43, excluded=[], mismatches=[], missing=[], met=true. The C6 run completed ok=43/43.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "met",
+      "evidence": "Replay command output: '[ver-rvl-b7ac3e2e-iter1] regression: 43 queries x 4, exec as dashboard'; compare.py reports exec_user='dashboard' and log_users=['dashboard']. Query-log Settings for the RID were consistently max_threads_min_free_memory_per_thread=268435456, max_bytes_ratio_before_external_group_by=0, max_bytes_before_external_group_by=7516192768, max_execution_time=600.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "SQL: SHOW CREATE TABLE bench.hits. Output includes ENGINE=MergeTree and ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID), proving the DDL fix is persisted on bench.hits.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "SQL: SELECT profile_name,user_name,setting_name,value,inherit_profile FROM system.settings_profile_elements WHERE profile_name='dashboard_profile' OR user_name='dashboard'. Output assigns dashboard to dashboard_profile and persists max_execution_time=600, max_threads_min_free_memory_per_thread=268435456, max_bytes_ratio_before_external_group_by=0, max_bytes_before_external_group_by=7516192768. Effective values were also present in all RID query-log Settings rows.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [],
+  "proposed_criteria": [],
+  "gamed": false
+}

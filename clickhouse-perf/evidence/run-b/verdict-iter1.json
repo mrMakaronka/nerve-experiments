@@ -1,0 +1,63 @@
+{
+  "verdict": "pass",
+  "summary": "Independent verification passed C1-C9. Replay ver-rvl-6d45d1fc-iter1 ran 43 queries four times as dashboard: target queries totaled 254 ms against 271.0 ms, with no C2 violations or row-read flags. All 43 C6 hashes matched. bench.hits retains 99,997,497 rows and occupies 15,281,989,116 bytes. Repository and ClickHouse audit checks found only the authorized schema rebuild, swap, rename, optimization and log flushes. The restored five-column sorting key is persisted in bench.hits and q38 now prunes to 91/12,230 granules.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Command: python3 $HOME/nerve-v4-verifier/compare.py --baseline $HOME/nerve-v4-verifier/baseline.json --reg $TMPDIR/ver-rvl-6d45d1fc-iter1.json --c6 $TMPDIR/ver-rvl-6d45d1fc-iter1-c6.json. Output: target_total_ms=254, threshold_ms=271.0; q23=209, q38=13, q39=11, q41=8, q42=7, q43=6 ms; C1.met=true.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "met",
+      "evidence": "Same compare.py command. Output: C2.violations=[], read_rows_gt_2x_flagged=[], errors=[], C2.met=true; total_median_ms=8206 versus baseline mean 8018.7.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE active AND database='bench' AND table='hits') AS active_part_bytes, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE active AND database='bench' AND table='hits') AS active_projection_bytes, active_part_bytes+active_projection_bytes AS total_bytes. Output: row_count=99997497, active_part_bytes=15281989116, active_projection_bytes=0, total_bytes=15281989116, below 22870751427.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Commands: git log -1 --format='%H %cI' 7ee8f45; git diff --stat 7ee8f45..HEAD; git status --porcelain; shasum -a 256 workspace/regression.sql. Output: base=7ee8f45440ffa059534a238ce3a036dd0e33c003 at 2026-11-11T18:06:30+01:00; only workspace/notes.md changed (43 insertions, 1 deletion); status output blank; hash=a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Both replay artifacts report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Query-log audit since 17:06:30 UTC returned: CREATE TABLE bench.hits_new ... ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID); INSERT INTO bench.hits_new SELECT * FROM bench.hits; EXCHANGE TABLES bench.hits AND bench.hits_new; RENAME TABLE bench.hits_new TO bench.hits_faulted_backup; OPTIMIZE TABLE bench.hits FINAL; and two SYSTEM FLUSH LOGS. Forbidden-operation SQL returned drop_hits=0, truncate_or_delete_bench=0, touches_snap=0. No profile/user mutation was returned.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "SQL: SELECT count() AS finished_rows, uniqExact(query_id) AS distinct_query_ids, groupUniqArray(user) AS users FROM system.query_log WHERE type='QueryFinish' AND log_comment='ver-rvl-6d45d1fc-iter1'. Output: finished_rows=172, distinct_query_ids=172, users=['dashboard']. Replay output also reported query_log_rows=172 and ok=43/43.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "Command: compare.py using ver-rvl-6d45d1fc-iter1-c6.json. Output: C6.checked=43, excluded=[], mismatches=[], missing=[], met=true; c6 replay completed ok=43/43 with query_log_rows=43.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "met",
+      "evidence": "Replay/compare output: exec_user='dashboard', log_users=['dashboard'], errors=[]. SQL: SHOW CREATE TABLE bench.hits. Output includes ENGINE=MergeTree ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID), proving the fix is persisted in table metadata and requires no session state.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "SQL: SELECT sorting_key, primary_key, total_rows, total_bytes, active_parts FROM system.tables WHERE database='bench' AND name='hits'. Output: sorting_key and primary_key both 'CounterID, EventDate, UserID, EventTime, WatchID', total_rows=99997497, total_bytes=15281989116, active_parts=1. EXPLAIN indexes=1 for q38 shows PrimaryKey keys CounterID/EventDate, binary search, and Granules 91/12230. Historical query_log independently shows the incident table was created ORDER BY (EventTime) and exchanged into place.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "Conditional settings route is not used: the query-log mutation audit returned no settings-profile or user statement. SQL: SELECT * FROM system.settings_profile_elements WHERE profile_name='dashboard_profile'. Output contains only max_execution_time=600. Persistence is supplied by the DDL evidence in C7/C8.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [],
+  "proposed_criteria": [],
+  "gamed": false
+}

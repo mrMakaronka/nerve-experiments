@@ -1,0 +1,85 @@
+{
+  "verdict": "fail",
+  "summary": "The end state does not restore performance. My fresh dashboard replay completed without query errors, but C1 totaled 1832 ms versus the 271.0 ms limit and C2 had 30 regressions. Data count and correctness remain intact, repository scope is clean, and no prohibited operations occurred; however, table storage is 25,877,409,075 bytes versus the 22,870,751,427-byte cap, and no persistent DDL or profile fix exists.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "Command: compare.py --baseline baseline.json --reg ver-rvl-b6b4f1ab-iter1.json --c6 ver-rvl-b6b4f1ab-iter1-c6.json. Output: target_total_ms=1832, threshold_ms=271.0; q23=1405, q38=154, q39=101, q41=64, q42=63, q43=45 ms.",
+      "fix_hint": "A permitted persistent change must reduce the target total to at most 271.0 ms."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "compare.py reported errors=[] and violations: q5 431>187.3; q6 459>273.0; q9 750>356.2; q10 811>397.4; q11 142>129.3; q12 174>143.7; q13 392>220.6; q14 552>331.5; q15 476>267.4; q16 529>171.7; q17 1570>585.4; q18 379>209; q19 11177>1141.4; q21 477>177.3; q23 1405>261.3; q26 150>118; q28 171>95; q29 5171>928.2; q31 287>169.7; q32 338>194; q33 11612>1041.7; q34 9447>1284.4; q35 9382>1379.3; q36 472>168; q37 141>74; q38 154>63; q39 101>61.3; q40 232>94.3; q41 64>58; q42 63>57 ms. read_rows_gt_2x_flagged=[21,37,38,39,40,41,42,43].",
+      "fix_hint": "Remove every timing violation without introducing query errors; investigate the flagged read amplification."
+    },
+    {
+      "id": "C3",
+      "status": "unmet",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE database='bench' AND table='hits' AND active) + (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE database='bench' AND table='hits' AND active) AS table_bytes. Output: row_count=99997497, table_bytes=25877409075. Count passes, but bytes exceed 22870751427.",
+      "fix_hint": "The final active table-plus-projection storage must be no more than 22,870,751,427 bytes without data loss."
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Base: 80eded6f9555754175bb6c1435e1df353c259dab, time 2026-11-11T15:19:12+01:00. `git diff --stat 80eded6..HEAD` -> workspace/notes.md only, 25 insertions/1 deletion; `git diff --name-only` -> workspace/notes.md; `git status --porcelain` -> empty. `shasum -a 256 workspace/regression.sql` -> a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219. Both replay files report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. Prohibited-operation SQL over QueryFinish rows since 2026-11-11 14:19:12 UTC returned zero rows. The finished nerve_rw mutation/System inventory contained five `SYSTEM FLUSH LOGS` statements plus exactly: `ALTER TABLE bench.hits ADD INDEX idx_counterid CounterID TYPE bloom_filter(0.01) GRANULARITY 1`; `ALTER TABLE bench.hits MATERIALIZE INDEX idx_counterid SETTINGS mutations_sync = 2`; `ALTER TABLE bench.hits DROP INDEX idx_counterid SETTINGS mutations_sync = 2`. No settings-profile or user mutation appeared.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "`SYSTEM FLUSH LOGS` through nerve_verify was correctly refused as read-only with code 164. Independent SQL on system.query_log for log_comment='ver-rvl-b6b4f1ab-iter1' returned finished_rows=172, distinct_query_ids=172, distinct_queries=43, users=['dashboard']. The replay artifact independently reports query_log_rows=172. Thus all expected rows are already persisted and visible.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "compare.py output: C6.run_id=ver-rvl-b6b4f1ab-iter1-c6, checked=43, excluded=[], mismatches=[], missing=[], met=true.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "unmet",
+      "evidence": "Replay artifact and query_log both show only user dashboard in fresh sessions. `SHOW CREATE TABLE bench.hits` shows `ORDER BY (EventTime)`; system.data_skipping_indices and system.projections both return zero rows. system.settings_profile_elements assigns dashboard_profile to dashboard, but the profile contains only max_execution_time=600. Therefore no persistent performance fix is visible to the workload identity.",
+      "fix_hint": "Persist an allowed DDL or settings-profile change that is effective for fresh dashboard sessions and passes C1/C2."
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "Conditional DDL-evidence branch is not applicable because no DDL fix was retained. Metadata was still checked: `SHOW CREATE TABLE bench.hits` shows `ORDER BY (EventTime)`, while data-skipping-index and projection queries return zero rows.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "Conditional settings-change branch is not applicable because no performance setting was retained. system.settings_profile_elements proves dashboard inherits dashboard_profile and that its sole setting is max_execution_time=600. `SHOW CREATE USER dashboard` was unavailable to nerve_verify due SHOW USERS privilege, but the assignment is directly visible in the profile-elements table.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Dashboard performance remains severely degraded",
+      "body": "The independent dashboard replay missed C1 by 1561 ms and produced 30 C2 violations; total warm median workload time was 57,857 ms versus the 8,018.7 ms baseline mean.",
+      "priority": 0,
+      "location": "workspace/notes.md:27",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "Current table exceeds the storage cap",
+      "body": "The row count is intact, but active table-plus-projection storage is 25,877,409,075 bytes, 3,006,657,648 bytes above the criterion limit.",
+      "priority": 1,
+      "location": "workspace/notes.md:14",
+      "criterion_id": "C3"
+    },
+    {
+      "title": "No persistent fix exists for dashboard",
+      "body": "The temporary skip index was removed, there are no projections, and dashboard_profile contains no performance setting. Fresh dashboard sessions therefore retain the failing end state.",
+      "priority": 0,
+      "location": "workspace/notes.md:7",
+      "criterion_id": "C7"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

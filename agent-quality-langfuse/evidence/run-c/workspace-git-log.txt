@@ -1,0 +1,3 @@
+bc5e92b prompt: drop LIMIT-1 tie bullet (caused control regression q837)
+71f6f5b prompt: append general SQL-writing guidance (no schema facts)
+71d6c39 baseline workspace

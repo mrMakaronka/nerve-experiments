@@ -1,0 +1,3 @@
+- SQLite: string comparison is case-sensitive with `=`; use the exact values given in the evidence.
+- Percentages: `CAST(... AS REAL) * 100 / COUNT(...)`.
+- Integer division truncates in SQLite; cast to REAL for ratios and averages of integers.

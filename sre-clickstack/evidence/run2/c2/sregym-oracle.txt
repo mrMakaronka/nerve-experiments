@@ -1,0 +1,26 @@
+2026-11-10 04:03:34,733 - all.application - INFO - Namespace astronomy-shop already exists.
+== InternalTrafficPolicy Mitigation Evaluation ==
+== Mitigation Evaluation ==
+service/recommendation internalTrafficPolicy=Local
+Worker nodes: ['kind-worker', 'kind-worker2', 'kind-worker3']
+Nodes with Ready service endpoint: ['kind-worker']
+Uncovered nodes: ['kind-worker2', 'kind-worker3']
+Fault still active: internalTrafficPolicy=Local and 2 worker node(s) have no Ready local endpoint.
+[timeline] {"ts_utc": "2026-11-10 03:03:34", "event": "oracle", "problem": "internal_traffic_policy_local_astronomy_shop", "result": {"internalTrafficPolicy": "Local", "uncovered_nodes": ["kind-worker2", "kind-worker3"], "success": false, "reason": "fault_still_present", "failure_class": "agent_error", "detail": {"policy": "Local", "uncovered_nodes": ["kind-worker2", "kind-worker3"]}}}
+{
+  "internalTrafficPolicy": "Local",
+  "uncovered_nodes": [
+    "kind-worker2",
+    "kind-worker3"
+  ],
+  "success": false,
+  "reason": "fault_still_present",
+  "failure_class": "agent_error",
+  "detail": {
+    "policy": "Local",
+    "uncovered_nodes": [
+      "kind-worker2",
+      "kind-worker3"
+    ]
+  }
+}

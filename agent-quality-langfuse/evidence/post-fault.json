@@ -1,0 +1,648 @@
+{
+ "summary": {
+  "run_name": "post-fault",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "fault": {
+   "kind": "rename",
+   "renames": [
+    [
+     "superhero",
+     "full_name",
+     "civilian_name"
+    ],
+    [
+     "superhero",
+     "height_cm",
+     "stature_cm"
+    ],
+    [
+     "publisher",
+     "publisher_name",
+     "imprint"
+    ],
+    [
+     "superpower",
+     "power_name",
+     "ability"
+    ]
+   ],
+   "injected_at": "2026-11-10T12:35:44+00:00",
+   "oracle_gold": {
+    "q751": "SELECT T3.ability FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T3.id = T2.power_id INNER JOIN gender AS T4 ON T4.id = T1.gender_id WHERE T4.gender = 'Male' LIMIT 5",
+    "q720": "SELECT DISTINCT T1.civilian_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id GROUP BY T1.civilian_name HAVING COUNT(T2.power_id) > 15",
+    "q733": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN colour AS T3 ON T1.eye_colour_id = T3.id WHERE T2.imprint = 'Marvel Comics' AND T3.colour = 'Gold'",
+    "q772": "SELECT T1.eye_colour_id, T1.hair_colour_id, T1.skin_colour_id FROM superhero AS T1 INNER JOIN publisher AS T2 ON T2.id = T1.publisher_id INNER JOIN gender AS T3 ON T3.id = T1.gender_id WHERE T2.imprint = 'Dark Horse Comics' AND T3.gender = 'Female'",
+    "q776": "SELECT T1.superhero_name, T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.civilian_name = 'Charles Chandler'",
+    "q811": "SELECT T4.alignment, T3.ability FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T3.id = T2.power_id INNER JOIN alignment AS T4 ON T1.alignment_id = T4.id WHERE T1.superhero_name = 'Atom IV'",
+    "q744": "SELECT SUM(CASE WHEN T2.imprint = 'Marvel Comics' THEN 1 ELSE 0 END) - SUM(CASE WHEN T2.imprint = 'DC Comics' THEN 1 ELSE 0 END) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id",
+    "q728": "SELECT colour.colour AS EyeColor, COUNT(superhero.id) AS Count, RANK() OVER (ORDER BY COUNT(superhero.id) DESC) AS PopularityRank FROM superhero INNER JOIN colour ON superhero.eye_colour_id = colour.id INNER JOIN publisher ON superhero.publisher_id = publisher.id WHERE publisher.imprint = 'Marvel Comics' GROUP BY colour.colour",
+    "q839": "SELECT T1.civilian_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T1.weight_kg < 100 AND T2.colour = 'Brown'",
+    "q747": "SELECT COUNT(id) FROM superhero WHERE civilian_name IS NULL",
+    "q766": "SELECT T1.civilian_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength' ORDER BY T2.attribute_value DESC LIMIT 1",
+    "q834": "SELECT CAST(COUNT(CASE WHEN T3.gender = 'Female' THEN 1 ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN gender AS T3 ON T1.gender_id = T3.id WHERE T2.imprint = 'George Lucas'",
+    "q727": "SELECT T2.imprint FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T1.superhero_name = 'Sauron'",
+    "q723": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id INNER JOIN colour AS T4 ON T1.eye_colour_id = T4.id WHERE T3.ability = 'Agility' AND T4.colour = 'Blue'",
+    "q778": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T3.ability = 'Adaptation'",
+    "q726": "SELECT superhero_name, stature_cm, RANK() OVER (ORDER BY stature_cm DESC) AS HeightRank FROM superhero INNER JOIN publisher ON superhero.publisher_id = publisher.id WHERE publisher.imprint = 'Marvel Comics'",
+    "q725": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.imprint = 'Marvel Comics'",
+    "q743": "SELECT (CAST(COUNT(*) AS REAL) * 100 / (SELECT COUNT(*) FROM superhero)), CAST(SUM(CASE WHEN T2.imprint = 'Marvel Comics' THEN 1 ELSE 0 END) AS REAL) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN alignment AS T3 ON T3.id = T1.alignment_id WHERE T3.alignment = 'Bad'",
+    "q827": "SELECT AVG(T1.stature_cm) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN race AS T3 ON T1.race_id = T3.id WHERE T2.imprint = 'Dark Horse Comics' AND T3.race != 'Human'",
+    "q780": "SELECT T3.ability FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T1.civilian_name = 'Hunter Zolomon'",
+    "q843": "SELECT T1.hero_id FROM hero_power AS T1 INNER JOIN superpower AS T2 ON T1.power_id = T2.id WHERE T2.ability = 'Intelligence'",
+    "q739": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T3.ability = 'Death Touch'",
+    "q745": "SELECT id FROM publisher WHERE imprint = 'Star Trek'",
+    "q826": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.imprint = 'DC Comics' ORDER BY T1.weight_kg DESC LIMIT 1",
+    "q838": "SELECT civilian_name FROM superhero WHERE superhero_name = 'Alien'",
+    "q792": "SELECT T3.ability FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T1.superhero_name = 'Abomination'",
+    "q806": "SELECT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T1.civilian_name = 'Karen Beecher-Duncan'",
+    "q762": "SELECT T2.ability FROM hero_power AS T1 INNER JOIN superpower AS T2 ON T1.power_id = T2.id GROUP BY T2.ability ORDER BY COUNT(T1.hero_id) DESC LIMIT 1",
+    "q734": "SELECT T2.imprint FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T1.superhero_name = 'Blue Beetle II'",
+    "q768": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.imprint = 'Dark Horse Comics'",
+    "q832": "SELECT superhero_name FROM superhero ORDER BY stature_cm DESC LIMIT 1",
+    "q758": "SELECT DISTINCT T3.colour FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id INNER JOIN colour AS T3 ON T1.hair_colour_id = T3.id WHERE T1.stature_cm = 185 AND T2.race = 'Human'",
+    "q788": "SELECT CAST(COUNT(CASE WHEN T2.imprint = 'Marvel Comics' THEN 1 ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN gender AS T3 ON T1.gender_id = T3.id WHERE T3.gender = 'Female'",
+    "q764": "SELECT DISTINCT T2.ability FROM hero_power AS T1 INNER JOIN superpower AS T2 ON T1.power_id = T2.id WHERE T1.hero_id = 1",
+    "q841": "SELECT T1.weight_kg, T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.id = 40",
+    "q775": "SELECT CAST(COUNT(CASE WHEN T3.colour = 'Blue' THEN T1.id ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN gender AS T2 ON T1.gender_id = T2.id INNER JOIN colour AS T3 ON T1.skin_colour_id = T3.id WHERE T2.gender = 'Female'",
+    "q783": "SELECT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id INNER JOIN colour AS T3 ON T1.skin_colour_id = T3.id WHERE T3.colour = 'Gold'",
+    "q830": "SELECT T3.attribute_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T1.superhero_name = 'Black Panther' ORDER BY T2.attribute_value ASC LIMIT 1",
+    "q787": "SELECT T2.race, T3.alignment FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id INNER JOIN alignment AS T3 ON T1.alignment_id = T3.id WHERE T1.superhero_name = 'Cameron Hicks'",
+    "q721": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T2.colour = 'Blue'",
+    "q812": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T2.colour = 'Blue' LIMIT 5",
+    "q735": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.hair_colour_id = T2.id WHERE T2.colour = 'Blond'",
+    "q814": "SELECT DISTINCT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.skin_colour_id = T2.id INNER JOIN hero_attribute AS T3 ON T1.id = T3.hero_id WHERE T3.attribute_value = 100",
+    "q800": "SELECT CAST(COUNT(CASE WHEN T2.colour = 'Blue' THEN 1 ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id",
+    "q799": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.id = 1",
+    "q756": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN alignment AS T2 ON T1.alignment_id = T2.id WHERE T2.alignment = 'Bad'",
+    "q750": "SELECT AVG(T1.weight_kg) FROM superhero AS T1 INNER JOIN gender AS T2 ON T1.gender_id = T2.id WHERE T2.gender = 'Female'",
+    "q817": "SELECT T3.race FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.hair_colour_id = T2.id INNER JOIN race AS T3 ON T1.race_id = T3.id INNER JOIN gender AS T4 ON T1.gender_id = T4.id WHERE T2.colour = 'Blue' AND T4.gender = 'Male'",
+    "q737": "SELECT T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.superhero_name = 'Copycat'",
+    "q736": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence' ORDER BY T2.attribute_value LIMIT 1",
+    "q804": "SELECT superhero_name FROM superhero WHERE id = 294",
+    "q819": "SELECT SUM(CASE WHEN T2.id = 7 THEN 1 ELSE 0 END) - SUM(CASE WHEN T2.id = 1 THEN 1 ELSE 0 END) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T1.weight_kg = 0 OR T1.weight_kg is NULL",
+    "q774": "SELECT T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.superhero_name = 'A-Bomb'",
+    "q828": "SELECT COUNT(T3.superhero_name) FROM hero_attribute AS T1 INNER JOIN attribute AS T2 ON T1.attribute_id = T2.id INNER JOIN superhero AS T3 ON T1.hero_id = T3.id WHERE T2.attribute_name = 'Speed' AND T1.attribute_value = 100",
+    "q786": "SELECT COUNT(T1.hero_id) FROM hero_attribute AS T1 INNER JOIN attribute AS T2 ON T1.attribute_id = T2.id WHERE T2.attribute_name = 'Strength' AND T1.attribute_value = ( SELECT MAX(attribute_value) FROM hero_attribute )",
+    "q785": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN alignment AS T2 ON T1.alignment_id = T2.id WHERE T2.alignment = 'Neutral'",
+    "q820": "SELECT T2.attribute_value FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T1.superhero_name = 'Hulk' AND T3.attribute_name = 'Strength'",
+    "q746": "SELECT AVG(attribute_value) FROM hero_attribute",
+    "q740": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id INNER JOIN gender AS T4 ON T1.gender_id = T4.id WHERE T3.attribute_name = 'Strength' AND T2.attribute_value = 100 AND T4.gender = 'Female'",
+    "q757": "SELECT T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.weight_kg = 169"
+   }
+  },
+  "exec_match_avg": 0.4,
+  "control_n": 20,
+  "control_exec_match_avg": 1,
+  "cost_per_q_usd": 0.000302,
+  "latency_avg_s": 1.149,
+  "latency_p50_s": 0.999,
+  "sql_errors": 35,
+  "dataset": "replay",
+  "langfuse_dataset_run_id": "2c5fb8ecc48266a8",
+  "langfuse_url": "http://localhost:3000/project/text2sql/experiments/results?baseline=2c5fb8ecc48266a8",
+  "task_failures": 0
+ },
+ "items": [
+  {
+   "id": "q717",
+   "control": false,
+   "sql": "SELECT T3.power_name\nFROM superhero AS T1\nINNER JOIN hero_power AS T2 ON T1.id = T2.hero_id\nINNER JOIN superpower AS T3 ON T2.power_id = T3.id\nWHERE T1.superhero_name = '3-D Man'",
+   "error": "OperationalError: no such column: T3.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.00029309999999999997,
+   "latency_s": 1.0203665839508176
+  },
+  {
+   "id": "q718",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT hp.hero_id)\nFROM hero_power hp\nJOIN superpower sp ON hp.power_id = sp.id\nWHERE sp.power_name = 'Super Strength'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002795,
+   "latency_s": 1.0881538749672472
+  },
+  {
+   "id": "q719",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT s.id)\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE sp.power_name = 'Super Strength'\n  AND s.height_cm > 200",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002988,
+   "latency_s": 0.9207647913135588
+  },
+  {
+   "id": "q722",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.skin_colour_id = c.id\nWHERE s.superhero_name = 'Apocalypse'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.000274,
+   "latency_s": 1.9599419166333973
+  },
+  {
+   "id": "q724",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero AS s\nJOIN colour AS ec ON s.eye_colour_id = ec.id\nJOIN colour AS hc ON s.hair_colour_id = hc.id\nWHERE ec.colour = 'Blue' AND hc.colour = 'Blond'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003011,
+   "latency_s": 0.8746882500126958
+  },
+  {
+   "id": "q729",
+   "control": false,
+   "sql": "SELECT AVG(CAST(s.height_cm AS REAL)) AS average_height_cm\nFROM superhero AS s\nJOIN publisher AS p ON s.publisher_id = p.id\nWHERE p.publisher_name = 'Marvel Comics'\n  AND s.height_cm > 0",
+   "error": "OperationalError: no such column: s.height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.0003898,
+   "latency_s": 1.7332775420509279
+  },
+  {
+   "id": "q730",
+   "control": false,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE p.publisher_name = 'Marvel Comics'\n  AND sp.power_name = 'Super Strength'",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0003138,
+   "latency_s": 0.9853505003266037
+  },
+  {
+   "id": "q731",
+   "control": false,
+   "sql": "SELECT COUNT(s.id) AS superhero_count\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nWHERE p.publisher_name = 'DC Comics'",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002769,
+   "latency_s": 0.8730690418742597
+  },
+  {
+   "id": "q732",
+   "control": false,
+   "sql": "SELECT p.publisher_name\nFROM hero_attribute ha\nJOIN attribute a ON ha.attribute_id = a.id\nJOIN superhero s ON ha.hero_id = s.id\nJOIN publisher p ON s.publisher_id = p.id\nWHERE a.attribute_name = 'Speed'\nORDER BY ha.attribute_value ASC\nLIMIT 1",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0003434,
+   "latency_s": 1.3059848328121006
+  },
+  {
+   "id": "q738",
+   "control": true,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero s\nJOIN hero_attribute ha ON s.id = ha.hero_id\nJOIN attribute a ON ha.attribute_id = a.id\nWHERE a.attribute_name = 'Durability' AND ha.attribute_value < 50",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002959,
+   "latency_s": 3.118228333070874
+  },
+  {
+   "id": "q741",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero AS s\nJOIN hero_power AS hp ON hp.hero_id = s.id\nGROUP BY s.id, s.superhero_name\nORDER BY COUNT(hp.power_id) DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.00030839999999999996,
+   "latency_s": 1.231027249712497
+  },
+  {
+   "id": "q742",
+   "control": true,
+   "sql": "SELECT COUNT(T1.id)\nFROM superhero AS T1\nINNER JOIN race AS T2 ON T1.race_id = T2.id\nWHERE T2.race = 'Vampire'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002747,
+   "latency_s": 0.9665385829284787
+  },
+  {
+   "id": "q748",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.id = 75",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002669,
+   "latency_s": 0.8788290000520647
+  },
+  {
+   "id": "q749",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.superhero_name = 'Deathlok'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002854,
+   "latency_s": 0.9797454997897148
+  },
+  {
+   "id": "q752",
+   "control": true,
+   "sql": "SELECT T1.superhero_name\nFROM superhero AS T1\nINNER JOIN race AS T2 ON T1.race_id = T2.id\nWHERE T2.race = 'Alien'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002746,
+   "latency_s": 1.0223279166966677
+  },
+  {
+   "id": "q753",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero AS s\nJOIN colour AS c ON s.eye_colour_id = c.id\nWHERE s.height_cm BETWEEN 170 AND 190\n  AND c.colour = 'No Colour'",
+   "error": "OperationalError: no such column: s.height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.00031049999999999996,
+   "latency_s": 1.5175219997763634
+  },
+  {
+   "id": "q754",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM hero_power hp\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE hp.hero_id = 56",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.000269,
+   "latency_s": 0.8548800419084728
+  },
+  {
+   "id": "q755",
+   "control": false,
+   "sql": "SELECT DISTINCT s.full_name\nFROM superhero s\nJOIN race r ON s.race_id = r.id\nWHERE r.race = 'Demi-God'\nLIMIT 5",
+   "error": "OperationalError: no such column: s.full_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002746,
+   "latency_s": 0.9561349172145128
+  },
+  {
+   "id": "q759",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.weight_kg = (SELECT MAX(weight_kg) FROM superhero)",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002803,
+   "latency_s": 0.798852666746825
+  },
+  {
+   "id": "q760",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN p.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) AS marvel_percentage\nFROM superhero s\nLEFT JOIN publisher p ON s.publisher_id = p.id\nWHERE s.height_cm BETWEEN 150 AND 180",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.00044899999999999996,
+   "latency_s": 2.0023769582621753
+  },
+  {
+   "id": "q763",
+   "control": true,
+   "sql": "SELECT ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON ha.hero_id = s.id\nWHERE s.superhero_name = 'Abomination'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002739,
+   "latency_s": 0.8397127501666546
+  },
+  {
+   "id": "q765",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT hp.hero_id)\nFROM hero_power hp\nJOIN superpower sp ON hp.power_id = sp.id\nWHERE sp.power_name = 'stealth'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002769,
+   "latency_s": 0.8571687918156385
+  },
+  {
+   "id": "q767",
+   "control": true,
+   "sql": "SELECT CAST(COUNT(id) AS REAL) / SUM(CASE WHEN skin_colour_id = 1 THEN 1 ELSE 0 END) AS average\nFROM superhero",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00040249999999999997,
+   "latency_s": 1.7704035001806915
+  },
+  {
+   "id": "q769",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nJOIN hero_attribute ha ON ha.hero_id = s.id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE a.attribute_name = 'durability'\n  AND p.publisher_name = 'Dark Horse Comics'\nORDER BY ha.attribute_value DESC\nLIMIT 1",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.00032649999999999997,
+   "latency_s": 1.1213326249271631
+  },
+  {
+   "id": "q770",
+   "control": false,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.full_name = 'Abraham Sapien'",
+   "error": "OperationalError: no such column: s.full_name",
+   "exec_match": 0,
+   "cost_usd": 0.0003047,
+   "latency_s": 1.0930605833418667
+  },
+  {
+   "id": "q771",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE sp.power_name = 'Flight'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002835,
+   "latency_s": 0.8642773330211639
+  },
+  {
+   "id": "q773",
+   "control": false,
+   "sql": "SELECT s.superhero_name, p.publisher_name\nFROM superhero s\nLEFT JOIN publisher p ON s.publisher_id = p.id\nWHERE s.hair_colour_id = s.skin_colour_id\n  AND s.hair_colour_id = s.eye_colour_id",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002984,
+   "latency_s": 0.9181519169360399
+  },
+  {
+   "id": "q779",
+   "control": true,
+   "sql": "SELECT COUNT(hp.power_id) AS power_count\nFROM hero_power hp\nJOIN superhero s ON s.id = hp.hero_id\nWHERE s.superhero_name = 'Amazo'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00027709999999999996,
+   "latency_s": 1.023031999822706
+  },
+  {
+   "id": "q781",
+   "control": false,
+   "sql": "SELECT s.height_cm\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE c.colour = 'Amber'",
+   "error": "OperationalError: no such column: s.height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.00027309999999999997,
+   "latency_s": 1.022392916958779
+  },
+  {
+   "id": "q782",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN colour e ON s.eye_colour_id = e.id\nJOIN colour h ON s.hair_colour_id = h.id\nWHERE e.colour = 'Black' AND h.colour = 'Black'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003181,
+   "latency_s": 1.293915166053921
+  },
+  {
+   "id": "q784",
+   "control": false,
+   "sql": "SELECT T1.full_name\nFROM superhero AS T1\nINNER JOIN race AS T2 ON T1.race_id = T2.id\nWHERE T2.race = 'Vampire'",
+   "error": "OperationalError: no such column: T1.full_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002728,
+   "latency_s": 0.932198875118047
+  },
+  {
+   "id": "q790",
+   "control": false,
+   "sql": "SELECT (SELECT SUM(weight_kg) FROM superhero WHERE full_name = 'Emil Blonsky')\n     - (SELECT SUM(weight_kg) FROM superhero WHERE full_name = 'Charles Chandler') AS weight_difference",
+   "error": "OperationalError: no such column: full_name",
+   "exec_match": 0,
+   "cost_usd": 0.00029729999999999996,
+   "latency_s": 0.8607837921008468
+  },
+  {
+   "id": "q791",
+   "control": false,
+   "sql": "SELECT CAST(SUM(height_cm) AS REAL) / COUNT(*) AS average_height\nFROM superhero",
+   "error": "OperationalError: no such column: height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.0004211,
+   "latency_s": 2.166074541863054
+  },
+  {
+   "id": "q794",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN hero_attribute ha ON ha.hero_id = s.id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE a.attribute_name = 'Speed'\nORDER BY ha.attribute_value DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002995,
+   "latency_s": 1.0792842502705753
+  },
+  {
+   "id": "q795",
+   "control": true,
+   "sql": "SELECT COUNT(*) FROM superhero WHERE alignment_id = 3",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002554,
+   "latency_s": 0.9171344172209501
+  },
+  {
+   "id": "q796",
+   "control": true,
+   "sql": "SELECT a.attribute_name, ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON s.id = ha.hero_id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE s.superhero_name = '3-D Man'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00029099999999999997,
+   "latency_s": 0.9243707498535514
+  },
+  {
+   "id": "q797",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN colour e ON s.eye_colour_id = e.id\nJOIN colour h ON s.hair_colour_id = h.id\nWHERE e.colour = 'Blue' AND h.colour = 'Brown'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.000293,
+   "latency_s": 0.9540332090109587
+  },
+  {
+   "id": "q798",
+   "control": false,
+   "sql": "SELECT p.publisher_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nWHERE s.superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002871,
+   "latency_s": 0.8691280828788877
+  },
+  {
+   "id": "q802",
+   "control": false,
+   "sql": "SELECT superhero_name\nFROM superhero\nWHERE height_cm IS NOT NULL AND height_cm > 0\nORDER BY height_cm DESC\nLIMIT 1",
+   "error": "OperationalError: no such column: height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.000287,
+   "latency_s": 1.0240637077949941
+  },
+  {
+   "id": "q803",
+   "control": false,
+   "sql": "SELECT id FROM superpower WHERE power_name = 'cryokinesis'",
+   "error": "OperationalError: no such column: power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002559,
+   "latency_s": 0.8364312499761581
+  },
+  {
+   "id": "q805",
+   "control": false,
+   "sql": "SELECT full_name FROM superhero WHERE weight_kg = 0 OR weight_kg IS NULL",
+   "error": "OperationalError: no such column: full_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002609,
+   "latency_s": 0.8515282082371414
+  },
+  {
+   "id": "q807",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.full_name = 'Helen Parr'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002846,
+   "latency_s": 1.0121668330393732
+  },
+  {
+   "id": "q813",
+   "control": true,
+   "sql": "SELECT AVG(ha.attribute_value) AS average_attribute_value\nFROM hero_attribute AS ha\nJOIN superhero AS s ON ha.hero_id = s.id\nWHERE s.alignment_id = 3",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002822,
+   "latency_s": 1.017116124741733
+  },
+  {
+   "id": "q815",
+   "control": true,
+   "sql": "SELECT COUNT(*) AS good_female_count\nFROM superhero s\nWHERE s.alignment_id = 1\n  AND s.gender_id = 2",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00026809999999999996,
+   "latency_s": 0.862525625154376
+  },
+  {
+   "id": "q816",
+   "control": false,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero s\nJOIN hero_attribute ha ON s.id = ha.hero_id\nWHERE ha.attribute_value BETWEEN 75 AND 80",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002833,
+   "latency_s": 1.0692154997959733
+  },
+  {
+   "id": "q818",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN g.id = 2 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(s.id) AS percentage\nFROM superhero s\nLEFT JOIN gender g ON s.gender_id = g.id\nWHERE s.alignment_id = 2",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003208,
+   "latency_s": 1.7547400002367795
+  },
+  {
+   "id": "q821",
+   "control": false,
+   "sql": "SELECT T3.power_name\nFROM superhero AS T1\nINNER JOIN hero_power AS T2 ON T1.id = T2.hero_id\nINNER JOIN superpower AS T3 ON T2.power_id = T3.id\nWHERE T1.superhero_name = 'Ajax'",
+   "error": "OperationalError: no such column: T3.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002925,
+   "latency_s": 0.913770167157054
+  },
+  {
+   "id": "q822",
+   "control": true,
+   "sql": "SELECT COUNT(*) AS green_skinned_villains\nFROM superhero s\nJOIN colour c ON s.skin_colour_id = c.id\nJOIN alignment a ON s.alignment_id = a.id\nWHERE c.colour = 'Green' AND a.alignment = 'Bad'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002956,
+   "latency_s": 1.0175833329558372
+  },
+  {
+   "id": "q823",
+   "control": false,
+   "sql": "SELECT COUNT(*) AS female_marvel_superheroes\nFROM superhero s\nJOIN gender g ON s.gender_id = g.id\nJOIN publisher p ON s.publisher_id = p.id\nWHERE g.gender = 'Female'\n  AND p.publisher_name = 'Marvel Comics'",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002977,
+   "latency_s": 0.9124875827692449
+  },
+  {
+   "id": "q825",
+   "control": false,
+   "sql": "SELECT DISTINCT g.gender\nFROM superhero s\nJOIN gender g ON s.gender_id = g.id\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE sp.power_name = 'Phoenix Force'",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002978,
+   "latency_s": 1.0171974999830127
+  },
+  {
+   "id": "q829",
+   "control": false,
+   "sql": "SELECT SUM(CASE WHEN p.publisher_name = 'DC Comics' THEN 1 ELSE 0 END)\n     - SUM(CASE WHEN p.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) AS difference\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0004296,
+   "latency_s": 1.8974944585934281
+  },
+  {
+   "id": "q831",
+   "control": false,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.superhero_name = 'Abomination'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00027249999999999996,
+   "latency_s": 1.1104013337753713
+  },
+  {
+   "id": "q833",
+   "control": false,
+   "sql": "SELECT superhero_name FROM superhero WHERE full_name = 'Charles Chandler'",
+   "error": "OperationalError: no such column: full_name",
+   "exec_match": 0,
+   "cost_usd": 0.0002587,
+   "latency_s": 0.8631879999302328
+  },
+  {
+   "id": "q835",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN a.alignment = 'Good' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) AS good_percentage\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nLEFT JOIN alignment a ON s.alignment_id = a.id\nWHERE p.publisher_name = 'Marvel Comics'",
+   "error": "OperationalError: no such column: p.publisher_name",
+   "exec_match": 0,
+   "cost_usd": 0.0003272,
+   "latency_s": 1.1505296668037772
+  },
+  {
+   "id": "q836",
+   "control": false,
+   "sql": "SELECT COUNT(*) AS total FROM superhero WHERE full_name LIKE 'John%'",
+   "error": "OperationalError: no such column: full_name",
+   "exec_match": 0,
+   "cost_usd": 0.000259,
+   "latency_s": 0.9177021658979356
+  },
+  {
+   "id": "q837",
+   "control": true,
+   "sql": "SELECT hero_id\nFROM hero_attribute\nWHERE attribute_value = (SELECT MIN(attribute_value) FROM hero_attribute)",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00028419999999999997,
+   "latency_s": 0.9219414172694087
+  },
+  {
+   "id": "q840",
+   "control": true,
+   "sql": "SELECT ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON ha.hero_id = s.id\nWHERE s.superhero_name = 'Aquababy'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002727,
+   "latency_s": 0.9326364169828594
+  },
+  {
+   "id": "q842",
+   "control": false,
+   "sql": "SELECT AVG(CAST(s.height_cm AS REAL)) AS avg_height_cm\nFROM superhero s\nJOIN alignment a ON s.alignment_id = a.id\nWHERE a.alignment = 'Neutral'\n  AND s.height_cm IS NOT NULL\n  AND s.height_cm > 0",
+   "error": "OperationalError: no such column: s.height_cm",
+   "exec_match": 0,
+   "cost_usd": 0.00036459999999999997,
+   "latency_s": 1.7348449579440057
+  },
+  {
+   "id": "q844",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.superhero_name = 'Blackwulf'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002741,
+   "latency_s": 0.8416860844008625
+  },
+  {
+   "id": "q845",
+   "control": false,
+   "sql": "SELECT DISTINCT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON s.id = hp.hero_id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.height_cm > (SELECT AVG(height_cm) * 0.8 FROM superhero)",
+   "error": "OperationalError: no such column: sp.power_name",
+   "exec_match": 0,
+   "cost_usd": 0.0004186,
+   "latency_s": 1.6730009578168392
+  }
+ ]
+}

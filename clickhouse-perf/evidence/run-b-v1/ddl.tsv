@@ -1,0 +1,7 @@
+event_time	query_kind	query_duration_ms	query
+2026-11-11 14:21:05	Create	11	CREATE TABLE bench.hits_fixed AS bench.hits ENGINE = MergeTree ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID) SETTINGS fsync_after_insert = 1, auto_statistics_types = \'\', index_granularity = 8192
+2026-11-11 14:23:19	Insert	124416	INSERT INTO bench.hits_fixed SELECT * FROM bench.hits SETTINGS max_insert_threads = 16, max_threads = 16, min_insert_block_size_rows = 0, min_insert_block_size_bytes = 1073741824, max_insert_block_size = 10000000
+2026-11-11 14:29:45	Optimize	376931	OPTIMIZE TABLE bench.hits_fixed FINAL
+2026-11-11 14:32:23	Rename	5	EXCHANGE TABLES bench.hits AND bench.hits_fixed FORMAT Native
+2026-11-11 14:32:32	Drop	11	DROP TABLE bench.hits_fixed SYNC
+2026-11-11 14:51:54	Create	2	ALTER SETTINGS PROFILE dashboard_profile SETTINGS max_execution_time = 600, use_uncompressed_cache = 1, merge_tree_max_rows_to_use_cache = 23500000, merge_tree_max_bytes_to_use_cache = 6000000000, max_bytes_ratio_before_external_group_by = 0

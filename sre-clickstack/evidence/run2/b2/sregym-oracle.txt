@@ -1,0 +1,17 @@
+2026-11-10 02:11:12,934 - all.application - INFO - Namespace astronomy-shop already exists.
+== InternalTrafficPolicy Mitigation Evaluation ==
+== Mitigation Evaluation ==
+service/recommendation internalTrafficPolicy=Cluster
+Worker nodes: ['kind-worker', 'kind-worker2', 'kind-worker3']
+Nodes with Ready service endpoint: ['kind-worker']
+Uncovered nodes: ['kind-worker2', 'kind-worker3']
+Running connectivity probe from node: kind-worker2
+PROBE_OK
+Probe result: PASS
+[timeline] {"ts_utc": "2026-11-10 01:11:19", "event": "oracle", "problem": "internal_traffic_policy_local_astronomy_shop", "result": {"success": true, "internalTrafficPolicy": "Cluster", "probe_node": "kind-worker2", "probe_ok": true}}
+{
+  "success": true,
+  "internalTrafficPolicy": "Cluster",
+  "probe_node": "kind-worker2",
+  "probe_ok": true
+}

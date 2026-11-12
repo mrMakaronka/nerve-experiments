@@ -1,0 +1,26 @@
+# secrets (each case has a .env.example)
+.env
+.env.*
+!.env.example
+# upstream sources are pinned in PINS.md and cloned into vendor/, never committed
+vendor
+*-src/
+# local run state
+.venv/
+__pycache__/
+.ruff_cache/
+node_modules/
+.DS_Store
+.nerve-review/
+loop-workspace/
+logs/
+sre-clickstack/clickstack/
+sre-clickstack/k8s/
+*.zip
+*.sqlite
+
+# runnable copies of the SRE prompts (scripts/render-prompts.sh) and new reproduction runs
+sre-clickstack/prompts/local/
+sre-clickstack/runs/
+clickhouse-perf/runs/
+agent-quality-langfuse/runs/

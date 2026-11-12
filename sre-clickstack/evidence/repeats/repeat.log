@@ -1,0 +1,106 @@
+[2026-11-10 03:04:55] repeat.sh start: N=3 baseline=16min problem=env_variable_shadowing_astronomy_shop
+  token unchanged
+[2026-11-10 03:05:15] rep1-B: clean baseline 16 min
+[2026-11-10 03:21:15] rep1-B: inject
+[2026-11-10 03:39:28] rep1-B: loop settled ([2026-11-10 03:39:28] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep1-B)
+[2026-11-10 03:39:33] rep1-B: oracle "success": true
+{"run_id": "rep1-B", "kind": "B", "verdict": "pass", "oracle": "success", "iterations": 1, "t_loop_start": "2026-11-10 03:21:28", "t_mitigation": "2026-11-10 03:28:48", "t_verdict": "2026-11-10 03:39:05", "loop_minutes": 17.6, "cost_usd": 2.4, "c1_value": 0, "c2_value": 21.5, "verifier_queries_count": 1, "notes": "status=passed; C1:met C2:met C3:met C4:met C5:met"}
+  token unchanged
+[2026-11-10 03:39:34] rep1-C: clean baseline 16 min
+[2026-11-10 03:55:34] rep1-C: inject
+[2026-11-10 04:06:41] rep1-C: loop settled ([2026-11-10 04:06:41] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep1-C)
+[2026-11-10 04:08:45] rep1-C: oracle "success": false
+{"run_id": "rep1-C", "kind": "C", "verdict": "fail", "oracle": "failure", "iterations": 1, "t_loop_start": "2026-11-10 03:55:41", "t_mitigation": "2026-11-10 03:56:16", "t_verdict": "2026-11-10 04:06:37", "loop_minutes": 10.9, "cost_usd": 1.43, "c1_value": 87.57, "c2_value": 19452.1, "verifier_queries_count": 5, "notes": "status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met"}
+  token unchanged
+[2026-11-10 04:08:57] rep2-B: clean baseline 16 min
+[2026-11-10 04:24:57] rep2-B: inject
+[2026-11-10 04:49:05] rep2-B: loop settled ([2026-11-10 04:49:05] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep2-B)
+[2026-11-10 04:49:12] rep2-B: oracle "success": true
+{"run_id": "rep2-B", "kind": "B", "verdict": "needs_improvement", "oracle": "success", "iterations": 3, "t_loop_start": "2026-11-10 04:25:05", "t_mitigation": "2026-11-10 04:25:55", "t_verdict": "2026-11-10 04:48:36", "loop_minutes": 23.5, "cost_usd": 5.33, "c1_value": 0, "c2_value": 26.1, "verifier_queries_count": 7, "notes": "status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second window had zero user-facing errors and 1.381\u00d7 baseline edge volume, while load-"}
+  token unchanged
+[2026-11-10 04:49:13] rep2-C: clean baseline 16 min
+[2026-11-10 05:05:13] rep2-C: inject
+[2026-11-10 05:14:51] rep2-C: loop settled ([2026-11-10 05:14:51] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep2-C)
+[2026-11-10 05:16:54] rep2-C: oracle "success": false
+{"run_id": "rep2-C", "kind": "C", "verdict": "fail", "oracle": "failure", "iterations": 1, "t_loop_start": "2026-11-10 05:05:21", "t_mitigation": "2026-11-10 05:05:52", "t_verdict": "2026-11-10 05:14:23", "loop_minutes": 9.0, "cost_usd": 1.23, "c1_value": 91.64, "c2_value": 16855.9, "verifier_queries_count": 1, "notes": "status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met"}
+  token unchanged
+[2026-11-10 05:17:07] rep3-B: clean baseline 16 min
+[2026-11-10 05:33:07] rep3-B: inject
+[2026-11-10 05:43:13] rep3-B: loop settled ([2026-11-10 05:43:13] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep3-B)
+[2026-11-10 05:43:20] rep3-B: oracle "success": true
+{"run_id": "rep3-B", "kind": "B", "verdict": "pass", "oracle": "success", "iterations": 1, "t_loop_start": "2026-11-10 05:33:13", "t_mitigation": "2026-11-10 05:33:49", "t_verdict": "2026-11-10 05:43:04", "loop_minutes": 9.9, "cost_usd": 1.63, "c1_value": 0, "c2_value": 20.7, "verifier_queries_count": 1, "notes": "status=passed; C1:met C2:met C3:met C4:met C5:met"}
+  token unchanged
+[2026-11-10 05:43:21] rep3-C: clean baseline 16 min
+[2026-11-10 05:59:21] rep3-C: inject
+[2026-11-10 05:59:58] rep3-C: loop settled ([2026-11-10 05:59:58] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep3-C)
+[2026-11-10 06:00:11] rep3-C: oracle "success": false
+{"run_id": "rep3-C", "kind": "C", "verdict": "", "oracle": "failure", "iterations": 1, "t_loop_start": "2026-11-10 05:59:28", "t_mitigation": "", "t_verdict": "", "loop_minutes": "", "cost_usd": 0.0, "c1_value": "", "c2_value": "", "verifier_queries_count": 0, "notes": "status=awaiting_user reason=leg_failed; C1:pending C2:pending C3:pending C4:pending C5:pending"}
+# Repeats: env_variable_shadowing, Run B and Run C × N
+
+Source: `results.csv` (one row per loop, written by `scripts/repeat_row.py`). Median (min–max).
+`c1_value` / `c2_value` are recomputed by the harness over the 300 s before the verdict (synthetic-user error % / p95 ms); the verifier's own numbers are in each run's `verdict-iter*.json`.
+
+| kind | runs | loop minutes | cost USD | iterations | c1 err % | c2 p95 ms | verifier queries |
+|---|---|---|---|---|---|---|---|
+| B | 3 | 17.6 (9.9–23.5) | 2.4 (1.63–5.33) | 1 (1–3) | 0 (0–0) | 21.5 (20.7–26.1) | 1 (1–7) |
+| C | 3 | 9.95 (9–10.9) | 1.23 (0–1.43) | 1 (1–1) | 89.605 (87.57–91.64) | 18154 (16855.9–19452.1) | 1 (0–5) |
+
+## Verdict vs SREGym oracle
+
+- **B:** 2/3 runs where verifier `pass` and oracle `success` agree.
+  - disagreement in `rep2-B`: verdict `needs_improvement`, oracle `success` (status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second wind)
+- **C:** 2/3 runs where verifier rejected (`fail`/`needs_improvement`) and oracle `failure` agree.
+
+## Runs needing more than one iteration
+
+- `rep2-B` (B): 3 iterations — status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second window had zero user-facing errors and 1.381× baseline edge volume, while load-
+
+## All runs
+
+| run | kind | verdict | oracle | iter | loop min | $ | c1 | c2 | notes |
+|---|---|---|---|---|---|---|---|---|---|
+| rep1-B | B | pass | success | 1 | 17.6 | 2.4 | 0 | 21.5 | status=passed; C1:met C2:met C3:met C4:met C5:met |
+| rep1-C | C | fail | failure | 1 | 10.9 | 1.43 | 87.57 | 19452.1 | status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met |
+| rep2-B | B | needs_improvement | success | 3 | 23.5 | 5.33 | 0 | 26.1 | status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C |
+| rep2-C | C | fail | failure | 1 | 9.0 | 1.23 | 91.64 | 16855.9 | status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met |
+| rep3-B | B | pass | success | 1 | 9.9 | 1.63 | 0 | 20.7 | status=passed; C1:met C2:met C3:met C4:met C5:met |
+| rep3-C | C |  | failure | 1 |  | 0.0 |  |  | status=awaiting_user reason=leg_failed; C1:pending C2:pending C3:pending C4:pending C5:pending |
+[2026-11-10 06:00:12] repeat.sh done
+[2026-11-10 06:00:36] repeat.sh start: N=3 baseline=16min problem=env_variable_shadowing_astronomy_shop only=rep3-C:C
+[2026-11-10 06:00:36] rep3-C: clean baseline 16 min
+[2026-11-10 06:16:36] rep3-C: inject
+  token updated
+[2026-11-10 06:26:13] rep3-C: loop settled ([2026-11-10 06:26:13] collected into $HOME/Research/nerve-experiments/demo/evidence/repeats/rep3-C)
+[2026-11-10 06:28:01] rep3-C: oracle "success": false
+{"run_id": "rep3-C", "kind": "C", "verdict": "fail", "oracle": "failure", "iterations": 1, "t_loop_start": "2026-11-10 06:16:43", "t_mitigation": "2026-11-10 06:17:14", "t_verdict": "2026-11-10 06:26:06", "loop_minutes": 9.4, "cost_usd": 1.25, "c1_value": 87.76, "c2_value": 19380.6, "verifier_queries_count": 1, "notes": "status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met"}
+# Repeats: env_variable_shadowing, Run B and Run C × N
+
+Source: `results.csv` (one row per loop, written by `scripts/repeat_row.py`). Median (min–max).
+`c1_value` / `c2_value` are recomputed by the harness over the 300 s before the verdict (synthetic-user error % / p95 ms); the verifier's own numbers are in each run's `verdict-iter*.json`.
+
+| kind | runs | loop minutes | cost USD | iterations | c1 err % | c2 p95 ms | verifier queries |
+|---|---|---|---|---|---|---|---|
+| B | 3 | 17.6 (9.9–23.5) | 2.4 (1.63–5.33) | 1 (1–3) | 0 (0–0) | 21.5 (20.7–26.1) | 1 (1–7) |
+| C | 3 | 9.4 (9–10.9) | 1.25 (1.23–1.43) | 1 (1–1) | 87.76 (87.57–91.64) | 19380.6 (16855.9–19452.1) | 1 (1–5) |
+
+## Verdict vs SREGym oracle
+
+- **B:** 2/3 runs where verifier `pass` and oracle `success` agree.
+  - disagreement in `rep2-B`: verdict `needs_improvement`, oracle `success` (status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second wind)
+- **C:** 3/3 runs where verifier rejected (`fail`/`needs_improvement`) and oracle `failure` agree.
+
+## Runs needing more than one iteration
+
+- `rep2-B` (B): 3 iterations — status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C3, C4, and C5 are met, but C2 is unmet. The final verifier-owned 300-second window had zero user-facing errors and 1.381× baseline edge volume, while load-
+
+## All runs
+
+| run | kind | verdict | oracle | iter | loop min | $ | c1 | c2 | notes |
+|---|---|---|---|---|---|---|---|---|---|
+| rep1-B | B | pass | success | 1 | 17.6 | 2.4 | 0 | 21.5 | status=passed; C1:met C2:met C3:met C4:met C5:met |
+| rep1-C | C | fail | failure | 1 | 10.9 | 1.43 | 87.57 | 19452.1 | status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met |
+| rep2-B | B | needs_improvement | success | 3 | 23.5 | 5.33 | 0 | 26.1 | status=awaiting_user reason=max_iterations; C1:met C2:unmet C3:met C4:met C5:met; iter1 verdict=needs_improvement: C1, C |
+| rep2-C | C | fail | failure | 1 | 9.0 | 1.23 | 91.64 | 16855.9 | status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met |
+| rep3-B | B | pass | success | 1 | 9.9 | 1.63 | 0 | 20.7 | status=passed; C1:met C2:met C3:met C4:met C5:met |
+| rep3-C | C | fail | failure | 1 | 9.4 | 1.25 | 87.76 | 19380.6 | status=awaiting_user reason=max_iterations; C1:unmet C2:unmet C3:unmet C4:met C5:met |
+[2026-11-10 06:28:02] repeat.sh done

@@ -1,0 +1,71 @@
+{
+  "verdict": "needs_improvement",
+  "summary": "The persistent schema and profile changes pass C1 and C3\u2013C9, but the end state fails C2. My independent dashboard replay restored the six target queries to 145 ms versus the 253.3 ms threshold, preserved correctness and data, and confirmed persistence. However, 19 of 43 queries exceeded the pinned no-regression limits, so the loop cannot pass.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Command: replay.py --set regression --repeat 4 --run-id ver-rvl-4e86c126-iter2, followed by compare.py. Output: target_total_ms=145, threshold_ms=253.3; q23=106, q38=11, q39=8, q41=7, q42=7, q43=6 ms; errors=[].",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "Command: python3 compare.py --baseline $HOME/nerve-v4-verifier/baseline.json --reg $TMPDIR/ver-rvl-4e86c126-iter2.json --c6 $TMPDIR/ver-rvl-4e86c126-iter2-c6.json. Output violations, shown as actual/baseline/limit ms: q5 288/137.3/187.3; q6 343/210/273.0; q9 401/274/356.2; q10 459/305.7/397.4; q13 279/169.7/220.6; q14 398/255/331.5; q15 341/205.7/267.4; q16 191/121.7/171.7; q17 780/450.3/585.4; q18 263/159/209; q19 1256/878/1141.4; q21 196/127.3/177.3; q29 1182/714/928.2; q31 186/119.7/169.7; q32 228/144/194; q33 1233/801.3/1041.7; q34 1700/988/1284.4; q35 1596/1061/1379.3; q36 219/118/168. total_median_ms=12313 versus baseline_total_mean_ms=8018.7. read_rows_gt_2x_flagged=[] and errors=[].",
+      "fix_hint": "Restore broad workload performance until the same dashboard replay has an empty C2.violations list without losing the C1 improvement; then rerun the pinned verifier commands."
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "SQL: SELECT (SELECT count() FROM bench.hits) AS row_count, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.parts WHERE database='bench' AND table='hits' AND active) AS base_part_bytes, (SELECT coalesce(sum(bytes_on_disk),0) FROM system.projection_parts WHERE database='bench' AND table='hits' AND active) AS projection_part_bytes, base_part_bytes+projection_part_bytes AS total_bytes. Output: row_count=99997497, base_part_bytes=15294314419, projection_part_bytes=0, total_bytes=15294314419, below limit 22870751427.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Commands/output: git diff --stat 80eded6..HEAD => workspace/notes.md | 56, 1 file changed; git status --porcelain => empty; shasum -a 256 workspace/regression.sql => a7d6673357348ee9680443216b6f26f30d1dce9f313b419d38502417b2c2a219; git log shows HEAD 7d5cc5c and base 80eded6. Both run files report replay_py_sha256=2e85b83d35e89d1f573cef57e05b8df996ae1a4c2fb0654e5c399db161dd12d0. SQL audit since 2026-11-11 14:19:12 UTC for DROP bench.hits, bench TRUNCATE/DELETE, or has(databases,'_snap') returned rows=[]. Successful qualifying nerve_rw statements were CREATE TABLE bench.hits_fixed; INSERT INTO bench.hits_fixed SELECT * FROM bench.hits; EXCHANGE TABLES bench.hits AND bench.hits_fixed; DROP TABLE bench.hits_fixed SYNC; ALTER SETTINGS PROFILE dashboard_profile SETTINGS max_execution_time=600, use_uncompressed_cache=1, merge_tree_max_rows_to_use_cache=23500000, merge_tree_max_bytes_to_use_cache=6000000000, max_bytes_ratio_before_external_group_by=0; and SYSTEM FLUSH LOGS at 14:34:16, 14:36:07, 14:44:21, 14:45:26, 14:46:05, 14:46:53, 14:49:42, 14:50:41, 14:51:10, 14:53:15, and 14:53:39 UTC.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "SQL grouped QueryFinish rows where log_comment='ver-rvl-4e86c126-iter2'. Output: finish_rows=172, distinct_query_ids=172, query_numbers=43, min_repetitions=4, max_repetitions=4, users=['dashboard'].",
+      "fix_hint": ""
+    },
+    {
+      "id": "C6",
+      "status": "met",
+      "evidence": "Command: replay.py --set c6 --run-id ver-rvl-4e86c126-iter2-c6, followed by compare.py. Output: checked=43, excluded=[], mismatches=[], missing=[], met=true.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C7",
+      "status": "met",
+      "evidence": "Regression output: exec_user='dashboard', log_users=['dashboard'], query_log_rows=172. SQL over system.settings_profile_elements returned user_name='dashboard', inherit_profile='dashboard_profile'. RID query_log Settings contained use_uncompressed_cache=['1'], rows cache cap=['23500000'], bytes cache cap=['6000000000'], and external group-by ratio=['0'] for all 172 dashboard query IDs.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C8",
+      "status": "met",
+      "evidence": "SQL: SHOW CREATE TABLE bench.hits. Output includes ENGINE=MergeTree and ORDER BY (CounterID, EventDate, UserID, EventTime, WatchID), proving the DDL repair is persistent.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C9",
+      "status": "met",
+      "evidence": "SQL: SELECT profile_name,user_name,setting_name,value,inherit_profile FROM system.settings_profile_elements WHERE profile_name='dashboard_profile' OR user_name='dashboard'. Output links dashboard to dashboard_profile and lists max_execution_time=600, use_uncompressed_cache=1, merge_tree_max_rows_to_use_cache=23500000, merge_tree_max_bytes_to_use_cache=6000000000, max_bytes_ratio_before_external_group_by=0.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Independent dashboard replay has 19 C2 regressions",
+      "body": "Although the six incident targets are restored, 19 queries exceed the pinned no-regression formula. The total warm median is 12,313 ms versus the 8,018.7 ms baseline mean. Environmental explanations do not satisfy an end-state criterion.",
+      "priority": 1,
+      "location": "workspace/notes.md:54",
+      "criterion_id": "C2"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

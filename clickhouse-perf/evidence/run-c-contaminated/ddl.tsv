@@ -1,0 +1,4 @@
+event_time	query_kind	query_duration_ms	query
+2026-11-11 16:32:19	Alter	13	ALTER TABLE bench.hits ADD INDEX idx_counterid CounterID TYPE bloom_filter(0.01) GRANULARITY 1
+2026-11-11 16:32:21	Alter	753	ALTER TABLE bench.hits MATERIALIZE INDEX idx_counterid SETTINGS mutations_sync = 2
+2026-11-11 16:32:41	Alter	22	ALTER TABLE bench.hits DROP INDEX idx_counterid SETTINGS mutations_sync = 2

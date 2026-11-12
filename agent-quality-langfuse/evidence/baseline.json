@@ -1,0 +1,561 @@
+{
+ "summary": {
+  "run_name": "baseline",
+  "n": 60,
+  "model": "claude-haiku-5-5",
+  "fault": null,
+  "exec_match_avg": 0.8333,
+  "control_n": 20,
+  "control_exec_match_avg": 1,
+  "cost_per_q_usd": 0.000305,
+  "latency_avg_s": 1.151,
+  "latency_p50_s": 1.016,
+  "sql_errors": 0,
+  "dataset": "replay",
+  "langfuse_dataset_run_id": "ecc3d5187ab04afb",
+  "langfuse_url": "http://localhost:3000/project/text2sql/experiments/results?baseline=ecc3d5187ab04afb",
+  "task_failures": 0
+ },
+ "items": [
+  {
+   "id": "q717",
+   "control": false,
+   "sql": "SELECT T3.power_name\nFROM superhero AS T1\nINNER JOIN hero_power AS T2 ON T1.id = T2.hero_id\nINNER JOIN superpower AS T3 ON T2.power_id = T3.id\nWHERE T1.superhero_name = '3-D Man'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00029309999999999997,
+   "latency_s": 1.1386227081529796
+  },
+  {
+   "id": "q718",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT hp.hero_id)\nFROM hero_power hp\nJOIN superpower sp ON hp.power_id = sp.id\nWHERE sp.power_name = 'Super Strength'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002795,
+   "latency_s": 1.1260098330676556
+  },
+  {
+   "id": "q719",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT s.id)\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE sp.power_name = 'Super Strength'\n  AND s.height_cm > 200",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002988,
+   "latency_s": 0.9962202911265194
+  },
+  {
+   "id": "q722",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.skin_colour_id = c.id\nWHERE s.superhero_name = 'Apocalypse'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.000274,
+   "latency_s": 0.7603479591198266
+  },
+  {
+   "id": "q724",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN colour e ON s.eye_colour_id = e.id\nJOIN colour h ON s.hair_colour_id = h.id\nWHERE e.colour = 'Blue' AND h.colour = 'Blond'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002951,
+   "latency_s": 0.9148369580507278
+  },
+  {
+   "id": "q729",
+   "control": false,
+   "sql": "SELECT AVG(T1.height_cm)\nFROM superhero AS T1\nINNER JOIN publisher AS T2 ON T1.publisher_id = T2.id\nWHERE T2.publisher_name = 'Marvel Comics'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0004263,
+   "latency_s": 2.24221762502566
+  },
+  {
+   "id": "q730",
+   "control": false,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE p.publisher_name = 'Marvel Comics'\n  AND sp.power_name = 'Super Strength'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003138,
+   "latency_s": 1.4028244582004845
+  },
+  {
+   "id": "q731",
+   "control": false,
+   "sql": "SELECT COUNT(s.id)\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nWHERE p.publisher_name = 'DC Comics'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002734,
+   "latency_s": 1.2252718745730817
+  },
+  {
+   "id": "q732",
+   "control": false,
+   "sql": "SELECT p.publisher_name\nFROM hero_attribute ha\nJOIN attribute a ON ha.attribute_id = a.id\nJOIN superhero s ON ha.hero_id = s.id\nJOIN publisher p ON s.publisher_id = p.id\nWHERE a.attribute_name = 'Speed'\nORDER BY ha.attribute_value ASC\nLIMIT 1",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003454,
+   "latency_s": 1.3934671659953892
+  },
+  {
+   "id": "q738",
+   "control": true,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero s\nJOIN hero_attribute ha ON ha.hero_id = s.id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE a.attribute_name = 'Durability' AND ha.attribute_value < 50",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002959,
+   "latency_s": 1.0272014583460987
+  },
+  {
+   "id": "q741",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM hero_power hp\nJOIN superhero s ON s.id = hp.hero_id\nGROUP BY hp.hero_id, s.superhero_name\nORDER BY COUNT(hp.power_id) DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.00030839999999999996,
+   "latency_s": 1.0732709998264909
+  },
+  {
+   "id": "q742",
+   "control": true,
+   "sql": "SELECT COUNT(*)\nFROM superhero AS s\nJOIN race AS r ON s.race_id = r.id\nWHERE r.race = 'Vampire'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00026869999999999997,
+   "latency_s": 0.919592207763344
+  },
+  {
+   "id": "q748",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.id = 75",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002669,
+   "latency_s": 0.8964087502099574
+  },
+  {
+   "id": "q749",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.superhero_name = 'Deathlok'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002854,
+   "latency_s": 1.0411345837637782
+  },
+  {
+   "id": "q752",
+   "control": true,
+   "sql": "SELECT T1.superhero_name\nFROM superhero AS T1\nINNER JOIN race AS T2 ON T1.race_id = T2.id\nWHERE T2.race = 'Alien'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002746,
+   "latency_s": 1.004752540960908
+  },
+  {
+   "id": "q753",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.height_cm BETWEEN 170 AND 190\n  AND c.colour = 'No Colour'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00030599999999999996,
+   "latency_s": 1.452931874897331
+  },
+  {
+   "id": "q754",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM hero_power hp\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE hp.hero_id = 56",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.000269,
+   "latency_s": 1.1276831249706447
+  },
+  {
+   "id": "q755",
+   "control": false,
+   "sql": "SELECT DISTINCT s.full_name\nFROM superhero s\nJOIN race r ON s.race_id = r.id\nWHERE r.race = 'Demi-God'\nLIMIT 5",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002746,
+   "latency_s": 0.8379281661473215
+  },
+  {
+   "id": "q759",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nORDER BY s.weight_kg DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002758,
+   "latency_s": 0.9206834579817951
+  },
+  {
+   "id": "q760",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN p.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) AS marvel_percentage\nFROM superhero s\nLEFT JOIN publisher p ON s.publisher_id = p.id\nWHERE s.height_cm BETWEEN 150 AND 180",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00043,
+   "latency_s": 1.8106448333710432
+  },
+  {
+   "id": "q763",
+   "control": true,
+   "sql": "SELECT ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON ha.hero_id = s.id\nWHERE s.superhero_name = 'Abomination'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002739,
+   "latency_s": 0.963810124900192
+  },
+  {
+   "id": "q765",
+   "control": false,
+   "sql": "SELECT COUNT(DISTINCT hp.hero_id)\nFROM hero_power AS hp\nJOIN superpower AS sp ON hp.power_id = sp.id\nWHERE sp.power_name = 'stealth'",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0002789,
+   "latency_s": 0.8457523747347295
+  },
+  {
+   "id": "q767",
+   "control": true,
+   "sql": "SELECT CAST(COUNT(id) AS REAL) / SUM(CASE WHEN skin_colour_id = 1 THEN 1 ELSE 0 END) AS average\nFROM superhero",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0004764999999999999,
+   "latency_s": 2.4904119577258825
+  },
+  {
+   "id": "q769",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nJOIN hero_attribute ha ON ha.hero_id = s.id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE a.attribute_name = 'durability'\n  AND p.publisher_name = 'Dark Horse Comics'\nORDER BY ha.attribute_value DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.00032649999999999997,
+   "latency_s": 1.247132542077452
+  },
+  {
+   "id": "q770",
+   "control": false,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.full_name = 'Abraham Sapien'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00030419999999999997,
+   "latency_s": 1.128086875192821
+  },
+  {
+   "id": "q771",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE sp.power_name = 'Flight'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002835,
+   "latency_s": 0.8501052088104188
+  },
+  {
+   "id": "q773",
+   "control": false,
+   "sql": "SELECT s.superhero_name, p.publisher_name\nFROM superhero s\nLEFT JOIN publisher p ON s.publisher_id = p.id\nWHERE s.hair_colour_id = s.skin_colour_id\n  AND s.hair_colour_id = s.eye_colour_id",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0002984,
+   "latency_s": 0.9605620829388499
+  },
+  {
+   "id": "q779",
+   "control": true,
+   "sql": "SELECT COUNT(hp.power_id) AS power_count\nFROM hero_power hp\nJOIN superhero s ON hp.hero_id = s.id\nWHERE s.superhero_name = 'Amazo'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00027709999999999996,
+   "latency_s": 1.1222442500293255
+  },
+  {
+   "id": "q781",
+   "control": false,
+   "sql": "SELECT s.height_cm\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE c.colour = 'Amber'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00027309999999999997,
+   "latency_s": 0.9156341669149697
+  },
+  {
+   "id": "q782",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero AS s\nJOIN colour AS ec ON s.eye_colour_id = ec.id\nJOIN colour AS hc ON s.hair_colour_id = hc.id\nWHERE ec.colour = 'Black' AND hc.colour = 'Black'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003156,
+   "latency_s": 1.1381937498226762
+  },
+  {
+   "id": "q784",
+   "control": false,
+   "sql": "SELECT T1.full_name\nFROM superhero AS T1\nINNER JOIN race AS T2 ON T1.race_id = T2.id\nWHERE T2.race = 'Vampire'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002728,
+   "latency_s": 0.8260494582355022
+  },
+  {
+   "id": "q790",
+   "control": false,
+   "sql": "SELECT (SELECT SUM(weight_kg) FROM superhero WHERE full_name = 'Emil Blonsky')\n     - (SELECT SUM(weight_kg) FROM superhero WHERE full_name = 'Charles Chandler') AS weight_difference",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00029729999999999996,
+   "latency_s": 0.9204778340645134
+  },
+  {
+   "id": "q791",
+   "control": false,
+   "sql": "SELECT CAST(SUM(height_cm) AS REAL) / COUNT(*) AS average_height\nFROM superhero",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00037759999999999996,
+   "latency_s": 1.6886110831983387
+  },
+  {
+   "id": "q794",
+   "control": false,
+   "sql": "SELECT s.superhero_name\nFROM hero_attribute ha\nJOIN attribute a ON ha.attribute_id = a.id\nJOIN superhero s ON ha.hero_id = s.id\nWHERE a.attribute_name = 'Speed'\nORDER BY ha.attribute_value DESC\nLIMIT 1",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003215,
+   "latency_s": 1.1241132076829672
+  },
+  {
+   "id": "q795",
+   "control": true,
+   "sql": "SELECT COUNT(*) FROM superhero WHERE alignment_id = 3",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002554,
+   "latency_s": 0.7808195003308356
+  },
+  {
+   "id": "q796",
+   "control": true,
+   "sql": "SELECT a.attribute_name, ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON s.id = ha.hero_id\nJOIN attribute a ON a.id = ha.attribute_id\nWHERE s.superhero_name = '3-D Man'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00029099999999999997,
+   "latency_s": 0.9055658751167357
+  },
+  {
+   "id": "q797",
+   "control": true,
+   "sql": "SELECT s.superhero_name\nFROM superhero AS s\nJOIN colour AS ec ON s.eye_colour_id = ec.id\nJOIN colour AS hc ON s.hair_colour_id = hc.id\nWHERE ec.colour = 'Blue' AND hc.colour = 'Brown'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.000299,
+   "latency_s": 1.1696918751113117
+  },
+  {
+   "id": "q798",
+   "control": false,
+   "sql": "SELECT s.superhero_name, p.publisher_name\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nWHERE s.superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0002911,
+   "latency_s": 0.8821417922154069
+  },
+  {
+   "id": "q802",
+   "control": false,
+   "sql": "SELECT superhero_name\nFROM superhero\nWHERE height_cm = (SELECT MAX(height_cm) FROM superhero)",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.000326,
+   "latency_s": 1.3691873326897621
+  },
+  {
+   "id": "q803",
+   "control": false,
+   "sql": "SELECT id FROM superpower WHERE power_name = 'cryokinesis'",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0002559,
+   "latency_s": 0.7843788331374526
+  },
+  {
+   "id": "q805",
+   "control": false,
+   "sql": "SELECT full_name FROM superhero WHERE weight_kg = 0 OR weight_kg IS NULL",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0002609,
+   "latency_s": 0.799937916919589
+  },
+  {
+   "id": "q807",
+   "control": false,
+   "sql": "SELECT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.full_name = 'Helen Parr'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002846,
+   "latency_s": 0.9557839999906719
+  },
+  {
+   "id": "q813",
+   "control": true,
+   "sql": "SELECT AVG(ha.attribute_value) AS average_attribute_value\nFROM hero_attribute AS ha\nJOIN superhero AS s ON ha.hero_id = s.id\nWHERE s.alignment_id = 3",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002822,
+   "latency_s": 0.907865250017494
+  },
+  {
+   "id": "q815",
+   "control": true,
+   "sql": "SELECT COUNT(*)\nFROM superhero\nWHERE alignment_id = 1 AND gender_id = 2",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00026159999999999996,
+   "latency_s": 0.8793966667726636
+  },
+  {
+   "id": "q816",
+   "control": false,
+   "sql": "SELECT DISTINCT s.superhero_name\nFROM superhero AS s\nJOIN hero_attribute AS ha ON s.id = ha.hero_id\nWHERE ha.attribute_value BETWEEN 75 AND 80",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002853,
+   "latency_s": 0.9927285830490291
+  },
+  {
+   "id": "q818",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN g.id = 2 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(s.id) AS female_percentage\nFROM superhero s\nJOIN alignment a ON s.alignment_id = a.id\nJOIN gender g ON s.gender_id = g.id\nWHERE a.id = 2",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003138,
+   "latency_s": 1.6851952080614865
+  },
+  {
+   "id": "q821",
+   "control": false,
+   "sql": "SELECT T3.power_name\nFROM superhero AS T1\nINNER JOIN hero_power AS T2 ON T1.id = T2.hero_id\nINNER JOIN superpower AS T3 ON T2.power_id = T3.id\nWHERE T1.superhero_name = 'Ajax'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002925,
+   "latency_s": 0.9051018329337239
+  },
+  {
+   "id": "q822",
+   "control": true,
+   "sql": "SELECT COUNT(*) AS green_skinned_villains\nFROM superhero s\nJOIN colour c ON s.skin_colour_id = c.id\nJOIN alignment a ON s.alignment_id = a.id\nWHERE c.colour = 'Green' AND a.alignment = 'Bad'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002956,
+   "latency_s": 0.8945112498477101
+  },
+  {
+   "id": "q823",
+   "control": false,
+   "sql": "SELECT COUNT(*) AS female_marvel_count\nFROM superhero s\nJOIN gender g ON s.gender_id = g.id\nJOIN publisher p ON s.publisher_id = p.id\nWHERE g.gender = 'Female'\n  AND p.publisher_name = 'Marvel Comics'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002962,
+   "latency_s": 1.1399754593148828
+  },
+  {
+   "id": "q825",
+   "control": false,
+   "sql": "SELECT g.gender\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nJOIN gender g ON g.id = s.gender_id\nWHERE sp.power_name = 'Phoenix Force'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002948,
+   "latency_s": 0.8238711250014603
+  },
+  {
+   "id": "q829",
+   "control": false,
+   "sql": "SELECT SUM(CASE WHEN p.publisher_name = 'DC Comics' THEN 1 ELSE 0 END)\n     - SUM(CASE WHEN p.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) AS difference\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00043709999999999995,
+   "latency_s": 1.9866179577074945
+  },
+  {
+   "id": "q831",
+   "control": false,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.superhero_name = 'Abomination'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00027249999999999996,
+   "latency_s": 1.5959586249664426
+  },
+  {
+   "id": "q833",
+   "control": false,
+   "sql": "SELECT superhero_name\nFROM superhero\nWHERE full_name = 'Charles Chandler'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00025969999999999997,
+   "latency_s": 0.8311180830933154
+  },
+  {
+   "id": "q835",
+   "control": false,
+   "sql": "SELECT CAST(SUM(CASE WHEN a.alignment = 'Good' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) AS good_percentage\nFROM superhero s\nJOIN publisher p ON s.publisher_id = p.id\nLEFT JOIN alignment a ON s.alignment_id = a.id\nWHERE p.publisher_name = 'Marvel Comics'",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.0003272,
+   "latency_s": 1.1300362083129585
+  },
+  {
+   "id": "q836",
+   "control": false,
+   "sql": "SELECT COUNT(*) AS total\nFROM superhero\nWHERE full_name LIKE 'John%'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.00026,
+   "latency_s": 1.1073409160599113
+  },
+  {
+   "id": "q837",
+   "control": true,
+   "sql": "SELECT hero_id\nFROM hero_attribute\nWHERE attribute_value = (SELECT MIN(attribute_value) FROM hero_attribute)",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0003017,
+   "latency_s": 1.2294159578159451
+  },
+  {
+   "id": "q840",
+   "control": true,
+   "sql": "SELECT ha.attribute_value\nFROM hero_attribute ha\nJOIN superhero s ON ha.hero_id = s.id\nWHERE s.superhero_name = 'Aquababy'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002727,
+   "latency_s": 0.8183197919279337
+  },
+  {
+   "id": "q842",
+   "control": false,
+   "sql": "SELECT AVG(NULLIF(s.height_cm, 0)) AS average_height_cm\nFROM superhero AS s\nJOIN alignment AS a ON s.alignment_id = a.id\nWHERE a.alignment = 'Neutral'",
+   "error": null,
+   "exec_match": 0,
+   "cost_usd": 0.00042409999999999995,
+   "latency_s": 2.11277566710487
+  },
+  {
+   "id": "q844",
+   "control": true,
+   "sql": "SELECT c.colour\nFROM superhero s\nJOIN colour c ON s.eye_colour_id = c.id\nWHERE s.superhero_name = 'Blackwulf'",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0002741,
+   "latency_s": 1.0008403747342527
+  },
+  {
+   "id": "q845",
+   "control": false,
+   "sql": "SELECT DISTINCT sp.power_name\nFROM superhero s\nJOIN hero_power hp ON hp.hero_id = s.id\nJOIN superpower sp ON sp.id = hp.power_id\nWHERE s.height_cm > (SELECT AVG(height_cm) * 0.8 FROM superhero)",
+   "error": null,
+   "exec_match": 1,
+   "cost_usd": 0.0004351,
+   "latency_s": 1.8426288338378072
+  }
+ ]
+}

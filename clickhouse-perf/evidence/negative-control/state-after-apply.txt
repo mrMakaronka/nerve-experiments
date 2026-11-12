@@ -1,0 +1,7 @@
+parts_content_hash=5153838611756161804
+projections=[]
+skip_indexes=['idx_url']
+bench_tables=['hits']
+settings_profiles=['dashboard_profile','default','readonly']
+dashboard_profile=`dashboard_profile` SETTINGS max_execution_time = 600., max_threads = 32
+dashboard_user=CREATE USER dashboard  DEFAULT DATABASE bench SETTINGS PROFILE `dashboard_profile`

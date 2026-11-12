@@ -1,0 +1,35 @@
+{
+  "id": "11cf3a15",
+  "title": "demo-v4 run-c clean (criteria v2)",
+  "created_at": "2026-11-11T18:34:29.430430+00:00",
+  "updated_at": "2026-11-11T18:34:29.430430+00:00",
+  "source": "web",
+  "metadata": "{}",
+  "status": "created",
+  "sdk_session_id": null,
+  "parent_session_id": null,
+  "forked_from_message": null,
+  "connected_at": null,
+  "last_activity_at": null,
+  "archived_at": null,
+  "message_count": 0,
+  "total_cost_usd": 0.0,
+  "last_memorized_at": null,
+  "starred": 0,
+  "model": "claude-opus-5-5",
+  "backend": "claude",
+  "cwd": "~/nerve-v4-loops/run-c-clean",
+  "created_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+  "caused_by_actor_id": "6727b239-d57b-468b-a445-ccc4d86d5ea8",
+  "trigger": "chat",
+  "origin_detail": {},
+  "title_source": null,
+  "review_loop_id": "rvl-ec38122d",
+  "origin_label": "Started in the web chat"
+}
+[2026-11-11 18:34:31] rvl-ec38122d: implementing (iteration 1, $0.0)
+[2026-11-11 18:39:01] rvl-ec38122d: verifying (iteration 1, $1.311831)
+[2026-11-11 18:44:31] rvl-ec38122d: implementing (iteration 2, $2.355481)
+[2026-11-11 18:46:01] rvl-ec38122d: verifying (iteration 2, $2.906007)
+[2026-11-11 18:52:02] rvl-ec38122d: awaiting_user (iteration 2, $4.107584)
+[2026-11-11 18:52:02] collected into clickhouse-perf/evidence/run-c-clean

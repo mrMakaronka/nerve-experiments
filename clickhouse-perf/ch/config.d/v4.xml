@@ -1,0 +1,10 @@
+<clickhouse>
+  <!-- demo-v4: localhost-only container; query_log is the ground truth for timings -->
+  <logger><level>information</level></logger>
+  <query_log>
+    <database>system</database><table>query_log</table>
+    <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+  </query_log>
+  <!-- data on the container's named volume (Docker VM local disk); parquet source mounted read-only at /data -->
+  <user_files_path>/data/</user_files_path>
+</clickhouse>

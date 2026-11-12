@@ -1,0 +1,43 @@
+# ---- nerve-demo additions (closed-loop SREGym/ClickStack demo) ----
+gateway:
+  host: 127.0.0.1          # passwordless install: never bind beyond localhost
+  port: 8900
+
+agent:
+  backend: claude
+  effort: high             # xhigh/max thinking is slow for an interactive demo
+
+mcp_servers:
+  clickhouse:
+    type: stdio
+    command: /opt/homebrew/bin/uv
+    args: ["run", "--with", "mcp-clickhouse", "--python", "3.12", "mcp-clickhouse"]
+    env:
+      CLICKHOUSE_HOST: "localhost"
+      CLICKHOUSE_PORT: "8123"
+      CLICKHOUSE_USER: "nerve_ro"
+      CLICKHOUSE_SECURE: "false"
+      CLICKHOUSE_VERIFY: "false"
+      CLICKHOUSE_DATABASE: "default"
+      CLICKHOUSE_MCP_QUERY_TIMEOUT: "60"
+      # CLICKHOUSE_PASSWORD comes from config.local.yaml
+
+codex:
+  bin_path: /opt/homebrew/bin/codex
+  home_dir: ~/.nerve/codex
+  auth: chatgpt
+  extra_config:
+    # verifier legs run in workspace-write; allow kubectl -> kind API (127.0.0.1)
+    sandbox_workspace_write.network_access: true
+    # Nerve auto-approves MCP tools for Codex only for managed-gateway servers; a local
+    # stdio server needs this or Codex refuses the tool under approval_policy=never.
+    mcp_servers.clickhouse.default_tools_approval_mode: approve
+
+workflows:
+  enabled: true
+  review_loop:
+    enabled: true
+    implementer: {engine: claude-workflow, model: "", effort: ""}
+    verifier:    {engine: codex-ultracode, model: "", effort: ""}
+    max_iterations: 3
+    default_budget_usd: 10.0

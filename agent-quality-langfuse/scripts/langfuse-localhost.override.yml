@@ -1,0 +1,12 @@
+# demo-v3: bind every published port to localhost only.
+services:
+  langfuse-web:
+    ports: !override ["127.0.0.1:3000:3000"]
+  langfuse-worker:
+    ports: !override ["127.0.0.1:3030:3030"]
+  langfuse-ai-gateway:
+    ports: !override ["127.0.0.1:3031:3031"]
+  minio:
+    ports: !override ["127.0.0.1:9090:9000", "127.0.0.1:9091:9001"]
+  clickhouse:
+    ports: !override ["127.0.0.1:18123:8123", "127.0.0.1:19000:9000"]

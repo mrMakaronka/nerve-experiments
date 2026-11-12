@@ -1,0 +1,47 @@
+{
+  "verdict": "needs_improvement",
+  "summary": "C1, C3, C4, and C5 are met, but C2 remains unmet. My independent 300-second query measured load-generator p95 latency at 33,657,942 ns versus a 26,304,320.16 ns limit, or 1.535471\u00d7 baseline. The end state therefore does not satisfy all pinned health criteria.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "Executed via mcp__clickhouse__run_query. SQL: WITH toDateTime64('2026-11-10 04:10:02',9,'UTC') AS bs, toDateTime64('2026-11-10 04:25:02',9,'UTC') AS be, toDateTime64('2026-11-10 04:25:55',9,'UTC') AS tm, now64(9) AS we, greatest(we-INTERVAL 5 MINUTE,tm) AS ws SELECT bs,be,ws,we,dateDiff('second',ws,we) AS w_seconds,countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=bs AND Timestamp<be) AS b_req,countIf(ServiceName='load-generator' AND SpanKind='Client' AND StatusCode='Error' AND Timestamp>=bs AND Timestamp<be) AS b_err,round(100*b_err/greatest(b_req,1),6) AS b_err_pct,countIf(ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=ws AND Timestamp<we) AS w_req,countIf(ServiceName='load-generator' AND SpanKind='Client' AND StatusCode='Error' AND Timestamp>=ws AND Timestamp<we) AS w_err,round(100*w_err/greatest(w_req,1),6) AS w_err_pct,round(countIf(ServiceName='frontend-proxy' AND SpanKind='Server' AND Timestamp>=bs AND Timestamp<be)/(dateDiff('second',bs,be)/60),6) AS b_fp_spm,round(countIf(ServiceName='frontend-proxy' AND SpanKind='Server' AND Timestamp>=ws AND Timestamp<we)/(dateDiff('second',ws,we)/60),6) AS w_fp_spm,round(w_fp_spm/b_fp_spm,6) AS fp_ratio FROM otel_traces WHERE Timestamp>=bs AND Timestamp<we AND ServiceName IN ('load-generator','frontend-proxy'). Returned row: bs=04:10:02, be=04:25:02, ws=04:42:55.266659, we=04:47:55.266659, w_seconds=300, b_req=2045, b_err=1, b_err_pct=0.0489, w_req=935, w_err=0, w_err_pct=0.0, b_fp_spm=131.933333, w_fp_spm=218.0, fp_ratio=1.65235. Thus error rate is within baseline+1 percentage point and edge volume is 165.235% of baseline.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "Executed via mcp__clickhouse__run_query. SQL: WITH toDateTime64('2026-11-10 04:10:02',9,'UTC') AS bs, toDateTime64('2026-11-10 04:25:02',9,'UTC') AS be, toDateTime64('2026-11-10 04:25:55',9,'UTC') AS tm, now64(9) AS we, greatest(we-INTERVAL 5 MINUTE,tm) AS ws SELECT bs,be,ws,we,dateDiff('second',ws,we) AS w_seconds,quantileIf(0.95)(Duration,ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=bs AND Timestamp<be) AS b_p95_ns,quantileIf(0.95)(Duration,ServiceName='load-generator' AND SpanKind='Client' AND Timestamp>=ws AND Timestamp<we) AS w_p95_ns,round(1.2*b_p95_ns,3) AS limit_ns,round(w_p95_ns/b_p95_ns,6) AS ratio FROM otel_traces WHERE Timestamp>=bs AND Timestamp<we AND ServiceName='load-generator'. Returned row: ws=04:42:55.288050, we=04:47:55.288050, w_seconds=300, b_p95_ns=21920266.8, w_p95_ns=33657941.99999997, limit_ns=26304320.16, ratio=1.535471. The post-fix p95 exceeds the allowed 1.2\u00d7 baseline limit.",
+      "fix_hint": "Resolve the remaining latency source within authorized scope, then collect a fresh 300-second telemetry window and rerun this exact comparison."
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "Ran `kubectl --context kind-kind -n astronomy-shop get pods -o wide` and a JSON status aggregation. Output: `{ \"pods\": 26, \"not_ready_pods\": 0, \"bad_state_pods\": 0, \"restart_total\": 0, \"pods_with_restart\": 0 }`. The compact pod listing showed every pod in `Running`, all container-ready values `true` (load-generator `true,true`), and every restart value `0` (load-generator `0,0`). With no restarts at all, none occurred after T_mit.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "Ran `kubectl --context kind-kind -n astronomy-shop rollout history deployment/frontend-proxy`; revisions 3, 4, 7, and 8 were present. ReplicaSet inspection returned revision 7 as `FRONTEND_HOST=frontend,FRONTEND_HOST=localhost` and revision 8 as `FRONTEND_HOST=frontend`; both use `ghcr.io/open-telemetry/demo:2.2.0-frontend-proxy`. Current deployment output showed generation 8, revision 8, and exactly one `FRONTEND_HOST=frontend`. I normalized deployment/container/initContainer/image tuples from live `kubectl get deployments -o json` and from `helm -n astronomy-shop get manifest astronomy-shop | kubectl create --dry-run=client -f - -o json`, then ran `diff -u`; output was `IMAGES_IDENTICAL` and `LIVE_IMAGE_RECORDS=29`.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "All C1/C2 values above came from two verifier-executed `mcp__clickhouse__run_query` calls in this leg. Each criterion includes the SQL sent and the returned row; no implementer or STATE.md telemetry numbers were accepted as evidence.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Post-fix user-facing p95 latency remains above the recovery threshold",
+      "body": "The verifier-owned 300-second window measured p95 at 33,657,942 ns, which is 1.535471\u00d7 the 21,920,266.8 ns baseline and exceeds the 26,304,320.16 ns limit. This directly blocks C2 and a passing verdict.",
+      "priority": 1,
+      "location": "default.otel_traces (live verifier query)",
+      "criterion_id": "C2"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

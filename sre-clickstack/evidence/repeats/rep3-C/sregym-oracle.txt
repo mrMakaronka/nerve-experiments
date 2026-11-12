@@ -1,0 +1,16 @@
+2026-11-10 07:26:15,983 - all.application - INFO - Namespace astronomy-shop already exists.
+== Environment Variable Shadowing Mitigation Evaluation ==
+[FAIL] Duplicate FRONTEND_HOST definitions remain: ['frontend', 'localhost']
+[timeline] {"ts_utc": "2026-11-10 06:28:00", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "duplicate_env_definitions", "failure_class": "agent_error", "detail": {"env": "FRONTEND_HOST", "values": ["frontend", "localhost"]}}}
+{
+  "success": false,
+  "reason": "duplicate_env_definitions",
+  "failure_class": "agent_error",
+  "detail": {
+    "env": "FRONTEND_HOST",
+    "values": [
+      "frontend",
+      "localhost"
+    ]
+  }
+}

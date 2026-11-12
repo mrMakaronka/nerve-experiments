@@ -1,0 +1,61 @@
+{
+  "verdict": "fail",
+  "summary": "Fresh verifier run verifier-rvl-d42b3a50-iter1 (experiment_id 059fa955c5cae20c) independently confirms the regression remains: exec_match_avg is 0.3833 versus the 0.8110 threshold, and control_exec_match_avg is 0.95 rather than 1.0, with q837 regressing from baseline. Cost and latency satisfy their limits, and the anti-gaming replay requirement is met. The committed diff is append-only general guidance with no copied questions or expected SQL, but C4 is unmet because git status reports the untracked path .nerve-review/ outside workspace/.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "unmet",
+      "evidence": "get_run_scores(run_name=\"verifier-rvl-d42b3a50-iter1\") returned experiment_id=\"059fa955c5cae20c\"; run_scores.exec_match_avg=0.383333 and recomputed_from_item_scores.exec_match_avg=0.3833, agreeing after rounding. 0.3833 < required 0.8110.",
+      "fix_hint": "The workspace needs a permitted change that raises independently replayed exec_match_avg to at least 0.8110."
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "get_run_scores(verifier-rvl-d42b3a50-iter1) returned control_exec_match_avg=0.95 in both run_scores and recomputed aggregates. Its sole failed control item was q837 with exec_match=0. get_run_scores(baseline) returned control_exec_match_avg=1.0 and q837 exec_match=1.",
+      "fix_hint": "Remove the behavior causing q837 to regress and verify all 20 control items score 1."
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "get_run_scores(verifier-rvl-d42b3a50-iter1) returned cost_per_q_usd=0.000332 and latency_p50_s=1.162716. Cost ratio=0.000332/0.000302=1.0993, below 1.2; latency ratio=1.162716/0.990=1.1745, below 1.5.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "unmet",
+      "evidence": "git diff --stat 71d6c39..HEAD output: \"workspace/prompt.md | 7 +++++++\\n1 file changed, 7 insertions(+)\". git status --porcelain output: \"?? .nerve-review/\", which is outside workspace/. agent_fingerprint returned combined=\"5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1\". git diff --unified=3 showed only an appended General SQL guidance section; inspection found no dataset question text, expected SQL, table names, column names, or schema facts.",
+      "fix_hint": "Make the final Git status satisfy the criterion by ensuring it lists no path outside workspace/ while preserving the required review handoff through the loop's supported mechanism."
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "run_experiment(run_name=\"verifier-rvl-d42b3a50-iter1\", workspace_dir=\"$HOME/nerve-v3-loops/run-c/workspace\") was executed in this verifier leg and returned langfuse_dataset_run_id=\"059fa955c5cae20c\". get_run_scores on that exact run returned experiment_id=\"059fa955c5cae20c\" and supplied every reported performance number.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Replay quality remains far below the recovery threshold",
+      "body": "The fresh verifier replay scored 0.3833, missing the required 0.8110 by 42.77 percentage points. The prompt-only append therefore does not fix the regression.",
+      "priority": 0,
+      "location": "workspace/prompt.md:9",
+      "criterion_id": "C1"
+    },
+    {
+      "title": "Control item q837 regressed",
+      "body": "Control performance is 0.95 rather than the required 1.0. q837 scored 0 in the verifier run after scoring 1 in baseline.",
+      "priority": 1,
+      "location": "workspace/prompt.md:9",
+      "criterion_id": "C2"
+    },
+    {
+      "title": "Working tree contains an out-of-scope untracked path",
+      "body": "git status --porcelain reports ?? .nerve-review/, while C4 requires both inspected outputs to list only paths under workspace/.",
+      "priority": 1,
+      "location": ".nerve-review/rvl-d42b3a50/STATE.md:1",
+      "criterion_id": "C4"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}

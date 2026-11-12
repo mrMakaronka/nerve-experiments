@@ -1,0 +1,4 @@
+b4db62e prompt: superlative rule — LIMIT 1 for who/which, all tied rows for per-measurement IDs
+22fe02b workspace: Title Case note for lookup names; forbid unrequested NULL/0 filters
+bd04db8 schema_notes: document live column renames (full_name, height_cm, publisher_name, power_name)
+71d6c39 baseline workspace

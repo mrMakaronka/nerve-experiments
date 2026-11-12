@@ -1,0 +1,4 @@
+OK  CREATE DATABASE IF NOT EXISTS bench 
+OK  CREATE TABLE bench.hits ( WatchID BIGINT 
+load_s=95
+48	14.22 GiB	48

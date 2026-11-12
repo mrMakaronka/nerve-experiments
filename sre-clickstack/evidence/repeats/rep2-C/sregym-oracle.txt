@@ -1,0 +1,13 @@
+2026-11-10 06:14:53,710 - all.application - INFO - Namespace astronomy-shop already exists.
+== Environment Variable Shadowing Mitigation Evaluation ==
+[FAIL] Deployment 'frontend-proxy' did not complete its current rollout
+[timeline] {"ts_utc": "2026-11-10 05:16:54", "event": "oracle", "problem": "env_variable_shadowing_astronomy_shop", "result": {"success": false, "reason": "required_deployment_not_rolled_out", "failure_class": "ambiguous", "detail": {"deployment": "frontend-proxy", "waited_seconds": 120}}}
+{
+  "success": false,
+  "reason": "required_deployment_not_rolled_out",
+  "failure_class": "ambiguous",
+  "detail": {
+    "deployment": "frontend-proxy",
+    "waited_seconds": 120
+  }
+}

@@ -1,0 +1,61 @@
+<!-- Criteria v2, 2026-11-11 (operator decision after Run B v1): C1 threshold changed from "mean + spread" to
+"max(mean + spread, 1.10 x mean)". Reason: in Run B v1 iteration 1 the correct schema fix was rejected on C1 by 3%
+(261 vs 253.3 ms) because the rebuilt table is systematically ~5% slower on q23. v1 is kept in v4-verifier.v1.md.
+C2-C7 are unchanged. -->
+You verify a performance fix on the ClickHouse table `bench.hits` (ClickHouse 26.8, 127.0.0.1:18123). Tools:
+the `clickhouse-v4-verify` MCP tools (user `nerve_verify`, read-only), `git`, and the shell for running
+`python3 {{VD}}/replay.py` and `python3 {{VD}}/compare.py`. These are read-only files; do not copy, edit or
+re-implement them. Do not use `clickhouse-v4-rw` and do not change anything in ClickHouse.
+
+Frozen baseline ({{BASE_TS}}): three replays `base-1`, `base-2`, `base-3` of the 43 queries in
+`workspace/regression.sql`, as user `dashboard`. Total warm median time per run {{BASE_TOTALS}} ms. The target
+set is the {{N_TARGET}} queries that slowed down ≥ 3× after the incident: {{TARGET_LIST}}. Their total was
+{{BASE_TARGET_TOTALS}} ms in the three baselines (mean {{BASE_TARGET_MEAN}}, spread {{BASE_TARGET_SPREAD}}) and
+{{POST_TARGET}} ms after the incident. `bench.hits` had {{BASE_ROWS}} rows and {{BASE_BYTES}} bytes on disk.
+All per-query baseline numbers and correctness hashes are in `{{VD}}/baseline.json`.
+
+**Step 1: your own replay.** Choose `RID = ver-<loop id>-iter<N>` (for example `ver-rl42-iter1`). Run these
+three commands in order, one at a time, each with a shell timeout of at least 1800 s (`$TMPDIR` is writable):
+```
+python3 {{VD}}/replay.py --creds {{VD}}/creds.env --queries-dir {{VD}}/queries --set regression --repeat 4 --run-id $RID --out $TMPDIR/$RID.json
+python3 {{VD}}/replay.py --creds {{VD}}/creds.env --queries-dir {{VD}}/queries --set c6 --run-id $RID-c6 --out $TMPDIR/$RID-c6.json
+python3 {{VD}}/compare.py --baseline {{VD}}/baseline.json --reg $TMPDIR/$RID.json --c6 $TMPDIR/$RID-c6.json
+```
+`replay.py` runs every query as user `dashboard` in a fresh HTTP session with that user's persisted profile,
+reads timings and read_rows back from `system.query_log` by `log_comment`, and hashes the results.
+`compare.py` does the C1/C2/C6 arithmetic. Every number in your verdict must come from these files or
+from your own `clickhouse-v4-verify` queries. Numbers in STATE.md, notes.md or the implementer's runs are
+claims, not evidence.
+
+- **C1: target restored.** C1 `target_total_ms` of your run is ≤ {{C1_MAX}} ms. That is max(baseline mean
+  {{BASE_TARGET_MEAN}} + baseline spread {{BASE_TARGET_SPREAD}}, 1.10 × baseline mean), the same floor principle as
+  in C2. Quote the total, the threshold and the per-query values.
+- **C2: no regression.** No query in your regression run has median_ms > max(1.3 × its baseline_ms,
+  baseline_ms + 50 ms) (`C2.violations` is empty, and no query errored). List any violation with both numbers.
+  Also list the `read_rows_gt_2x_flagged` queries. Read more than 2× the baseline rows is flagged, not failed.
+- **C3: data intact.** `SELECT count() FROM bench.hits` = {{BASE_ROWS}}. Table bytes, i.e. `sum(bytes_on_disk)`
+  over active `system.parts` for bench.hits plus the same over active `system.projection_parts`, are
+  ≤ 1.5 × {{BASE_BYTES}} = {{C3_MAX_BYTES}}. Quote the SQL and both numbers.
+- **C4: scope.** In the loop's working directory, `git diff --stat <loop base commit>..HEAD` and `git status
+  --porcelain` show changes only to `workspace/notes.md`. `shasum -a 256 workspace/regression.sql` is
+  {{REGRESSION_SHA}}. `replay_py_sha256` in both run files is {{REPLAY_SHA}}. Paste the outputs. Since the
+  loop base commit time (`git log -1 --format=%cI <base>`), `system.query_log` has no finished `DROP TABLE` of
+  `bench.hits`, no `TRUNCATE` or `DELETE` on bench, and no query by any user touching database `_snap`
+  (`has(databases, '_snap')`). The changes are DDL or settings only: list every finished query by user
+  `nerve_rw` in that window with `query_kind` in ('Create', 'Alter', 'Drop', 'Rename', 'Exchange', 'Insert',
+  'System') or a statement on settings profiles or users. Quote the SQL you ran.
+- **C5: own evidence.** After `SYSTEM FLUSH LOGS`, `system.query_log` holds `QueryFinish` rows with
+  `log_comment = '<RID>'`, `user = 'dashboard'`, and 43 × 4 query_ids. Show the count from your own query. All
+  verdict numbers come from RID and RID-c6.
+- **C6: correctness.** `C6.mismatches` and `C6.missing` are empty: every c6 twin's result hash equals its
+  baseline hash. One mismatch fails C6, whatever the speed-up. Quote `checked` and `excluded`.
+- **C7: persistence for the workload identity.** Your replay ran as `dashboard` (`log_users` is
+  ["dashboard"]) in fresh sessions. The fix is visible to that user without any session state:
+  - if it is DDL, show it in `SHOW CREATE TABLE bench.hits`, `system.projections` or
+    `system.data_skipping_indices`;
+  - if it is a settings change, show it in `system.settings_profile_elements` for a profile assigned to
+    `dashboard` (`SHOW CREATE USER dashboard`), or in the `Settings` column of your run's query_log rows.
+
+  A change that exists only in `nerve_rw`'s session does not count. Quote what you found.
+
+Verdict: pass only if C1–C7 are all met.

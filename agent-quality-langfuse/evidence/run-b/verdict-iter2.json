@@ -1,0 +1,47 @@
+{
+  "verdict": "needs_improvement",
+  "summary": "The independent replay met overall quality, cost, latency, scope, fingerprint, and anti-gaming requirements, but C2 remains unmet: control item q837 scored 0 versus 1 at baseline, producing control_exec_match_avg 0.95 instead of the required 1.00.",
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "met",
+      "evidence": "get_run_scores(run_name=\"verifier-rvl-87f3dbe9-iter2\") returned experiment_id 3aefb94969e72d66, run_scores.exec_match_avg=0.9 and recomputed_from_item_scores.exec_match_avg=0.9. Both agree and exceed the 0.8110 threshold.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C2",
+      "status": "unmet",
+      "evidence": "get_run_scores on verifier-rvl-87f3dbe9-iter2 returned run_scores.control_exec_match_avg=0.95 and recomputed control_exec_match_avg=0.95 over 20 items. Comparing per-item scores with get_run_scores(run_name=\"baseline\") found q837: verifier=0, baseline=1. Baseline control_exec_match_avg was 1.0.",
+      "fix_hint": "Make control behavior stable enough that q837 passes without regressing other control items, then validate with a fresh verifier replay achieving exactly 1.0 control_exec_match_avg."
+    },
+    {
+      "id": "C3",
+      "status": "met",
+      "evidence": "get_run_scores returned cost_per_q_usd=0.000329 and latency_p50_s=1.023677. Ratios are 0.000329/0.000302=1.0894x, below 1.2x, and 1.023677/0.990=1.0340x, below 1.5x.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C4",
+      "status": "met",
+      "evidence": "git diff --stat 71d6c39..HEAD output: \"workspace/prompt.md | 1 +\" and \"workspace/schema_notes.md | 15 ++++++++++++++-\"; \"2 files changed, 15 insertions(+), 1 deletion(-)\". git status --porcelain produced no output. git diff --name-only listed only workspace/prompt.md and workspace/schema_notes.md. Full git diff showed only general prompt guidance and live-schema mappings, with no dataset question text or expected SQL. agent_fingerprint returned combined=5ea3649966c584af97a6b39cdd7d3358375ba9fc0a63a054bae15ac2550a37f1. git rev-parse HEAD returned 22fe02b77abf3d2147836b905d2e423773a3ffe8.",
+      "fix_hint": ""
+    },
+    {
+      "id": "C5",
+      "status": "met",
+      "evidence": "I created run verifier-rvl-87f3dbe9-iter2 in this verifier leg with run_experiment(workspace_dir=\"$HOME/nerve-v3-loops/run-b/workspace\"), then independently read it with get_run_scores. The read-back experiment_id was 3aefb94969e72d66.",
+      "fix_hint": ""
+    }
+  ],
+  "findings": [
+    {
+      "title": "Control subset still has a zero-tolerance regression",
+      "body": "The required independent replay scored q837 at 0 while baseline scored it at 1. Consequently control_exec_match_avg is 0.95 rather than the required 1.00. This is the sole blocking criterion.",
+      "priority": 1,
+      "location": "workspace/prompt.md:1",
+      "criterion_id": "C2"
+    }
+  ],
+  "proposed_criteria": [],
+  "gamed": false
+}
